@@ -1,0 +1,47 @@
+dictionaries:
+  - bash
+  - cpp
+  - docker
+  - sql
+  - golang
+enableFiletypes:
+  - dockercompose
+  - dotenv
+  - editorconfig
+  - ini
+  - makefile
+  - shellscript
+  - toml
+ignorePaths:
+  - .git/
+  - .gitattributes
+  - .gitignore
+  - cspell.yml
+  - dist/
+  - .golangci.yml
+  - go.mod
+  - go.sum
+ignoreRegExpList:
+  - /import \([^)]+\)/g
+language: en
+version: "0.2"
+words:
+  - buildcache
+  - coverprofile
+  - devcontainer
+  - dotfiles
+  - envctl
+  - gitleaks
+  - gitlint
+  - gocovsh
+  - golangci-lint
+  - gomod
+  - gpgconf
+  - hadolint
+  - ifeq
+  - ifneq
+  - markdownlint
+  - shellcheck
+  - shfmt
+  - sigstore
+  - twelvelabs
