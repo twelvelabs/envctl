@@ -1,6 +1,7 @@
 excludes:
   - dist/**
   - .cspellcache
+  - Brewfile.lock.json
 output:
   show_context: true
   show_url: true
@@ -8,7 +9,6 @@ output:
 processors:
   - preset: cspell
   - preset: gitleaks
-  - preset: hadolint
   - preset: markdownlint
   - preset: shellcheck
   - preset: shfmt

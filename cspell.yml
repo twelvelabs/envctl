@@ -27,6 +27,7 @@ language: en
 version: "0.2"
 words:
   - buildcache
+  - codecov
   - coverprofile
   - devcontainer
   - dotfiles
@@ -34,8 +35,11 @@ words:
   - gitleaks
   - gitlint
   - gocovsh
+  - gofmt
+  - golangci
   - golangci-lint
   - gomod
+  - goreleaser
   - gpgconf
   - hadolint
   - ifeq

@@ -17,7 +17,7 @@ generate:
 .PHONY: lint
 lint: ## Lint the app
 	actionlint
-	golangci-lint run
+	stylist check
 
 .PHONY: format
 format: ## Format the app

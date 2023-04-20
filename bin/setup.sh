@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -o errexit -o errtrace -o nounset -o pipefail
 
-# Non-installable dependencies.
+# Bootstrap dependencies.
 dependencies=(
-    "gh"
-    "git"
+    "brew"
     "go"
+    "npm"
 )
 for dependency in "${dependencies[@]}"; do
     if ! command -v "${dependency}" >/dev/null 2>&1; then
@@ -16,9 +16,7 @@ done
 
 # cspell: disable
 
-if ! command -v actionlint >/dev/null 2>&1; then
-    go install github.com/rhysd/actionlint/cmd/actionlint@latest
-fi
+brew bundle install
 
 if ! command -v go-enum >/dev/null 2>&1; then
     go install github.com/abice/go-enum@latest
@@ -28,8 +26,8 @@ if ! command -v gocovsh >/dev/null 2>&1; then
     go install github.com/orlangure/gocovsh@latest
 fi
 
-if ! command -v golangci-lint >/dev/null 2>&1; then
-    go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+if ! command -v cspell >/dev/null 2>&1; then
+    npm install -g cspell
 fi
 
 if ! command -v pin-github-action >/dev/null 2>&1; then
