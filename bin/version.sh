@@ -11,7 +11,12 @@ git fetch --all --tags 1>&2
 CURRENT_BRANCH=$(git symbolic-ref --short HEAD)
 CURRENT_VERSION=$(gh release view --json tagName --jq .tagName || true)
 NEXT_VERSION=$(gh semver)
-COMMITS=$(git log --color=always --format=" - %C(yellow)%h%Creset %s" "$CURRENT_VERSION...HEAD") # cspell: disable-line
+if [[ "${CURRENT_VERSION}" != "" ]]; then
+    COMMITS_REF="$CURRENT_VERSION...HEAD"
+else
+    COMMITS_REF="HEAD"
+fi
+COMMITS=$(git log --color=always --format=" - %C(yellow)%h%Creset %s" "$COMMITS_REF") # cspell: disable-line
 
 echo ""
 echo "Current branch:  $CURRENT_BRANCH"
