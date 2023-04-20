@@ -1,12 +1,9 @@
 .DEFAULT_GOAL := help
 SHELL := /bin/bash
 
-NAME = $(shell jq -r '.project_name' dist/metadata.json)
-ARCH = $(shell jq -r '.runtime.goarch' dist/metadata.json)
-OS = $(shell jq -r '.runtime.goos' dist/metadata.json)
+ARTIFACT_PATH = $(shell jq -r '.[0].path' dist/artifacts.json)
+INSTALL_DIR = /usr/local/bin
 
-BUILD_PATH = ./dist/${NAME}_${OS}_${ARCH}/${NAME}
-DST_DIR = /usr/local/bin
 
 ##@ App
 
@@ -41,8 +38,8 @@ build: ## Build the app
 
 .PHONY: install
 install: build ## Install the app
-	install -d ${DST_DIR}
-	install -m755 ${BUILD_PATH} ${DST_DIR}/
+	install -d ${INSTALL_DIR}
+	install -m755 "${ARTIFACT_PATH}" ${INSTALL_DIR}/
 
 .PHONY: version
 version: ## Calculate the next release version
