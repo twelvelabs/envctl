@@ -1,38 +1,38 @@
 #!/usr/bin/env bash
 set -o errexit -o errtrace -o nounset -o pipefail
 
-# Bootstrap dependencies.
-dependencies=(
-    "brew"
-    "go"
-    "npm"
-)
-for dependency in "${dependencies[@]}"; do
-    if ! command -v "${dependency}" >/dev/null 2>&1; then
-        echo "Unable to find dependency: ${dependency}."
-        exit 1
+# Ensure homebrew
+if command -v "brew" >/dev/null 2>&1; then
+    echo "Found dependency: brew."
+else
+    echo "Setup requires homebrew."
+    echo "Please follow the instructions at https://brew.sh"
+    exit 1
+fi
+
+# Ensure jq
+if command -v "jq" >/dev/null 2>&1; then
+    echo "Found dependency: jq."
+else
+    echo "Setup requires jq."
+    echo "Please run: brew install jq"
+    exit 1
+fi
+
+# Install dependencies
+while read -r json; do
+    command=$(echo "$json" | jq -r '.command')
+    install=$(echo "$json" | jq -r '.install')
+
+    if command -v "${command}" >/dev/null 2>&1; then
+        echo "Found dependency: ${command}."
+    else
+        echo "Installing dependency: ${command}..."
+        set -o xtrace
+        $install
+        set +o xtrace
     fi
-done
-
-# cspell: disable
-
-brew bundle install --no-lock
-
-if ! command -v go-enum >/dev/null 2>&1; then
-    go install github.com/abice/go-enum@latest
-fi
-
-if ! command -v gocovsh >/dev/null 2>&1; then
-    go install github.com/orlangure/gocovsh@latest
-fi
-
-if ! command -v cspell >/dev/null 2>&1; then
-    npm install -g cspell
-fi
-
-if ! command -v pin-github-action >/dev/null 2>&1; then
-    npm install -g pin-github-action
-fi
+done < <(jq --compact-output '.[]' dependencies.json)
 
 # Ensure local repo
 if ! git rev-parse --is-inside-work-tree &>/dev/null; then

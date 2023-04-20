@@ -1,0 +1,70 @@
+[
+    {
+        "command": "actionlint",
+        "install": "brew install actionlint"
+    },
+    {
+        "command": "gh",
+        "install": "brew install gh"
+    },
+    {
+        "command": "git",
+        "install": "brew install git"
+    },
+    {
+        "command": "gitleaks",
+        "install": "brew install gitleaks"
+    },
+    {
+        "command": "go",
+        "install": "brew install go"
+    },
+    {
+        "command": "golangci-lint",
+        "install": "brew install golangci-lint"
+    },
+    {
+        "command": "goreleaser",
+        "install": "brew install goreleaser"
+    },
+    {
+        "command": "gum",
+        "install": "brew install gum"
+    },
+    {
+        "command": "npm",
+        "install": "brew install node"
+    },
+    {
+        "command": "shellcheck",
+        "install": "brew install shellcheck"
+    },
+    {
+        "command": "shfmt",
+        "install": "brew install shfmt"
+    },
+    {
+        "command": "cspell",
+        "install": "npm install -g cspell"
+    },
+    {
+        "command": "go-enum",
+        "install": "go install github.com/abice/go-enum@latest"
+    },
+    {
+        "command": "gocovsh",
+        "install": "go install github.com/orlangure/gocovsh@latest"
+    },
+    {
+        "command": "markdownlint",
+        "install": "npm install -g markdownlint-cli"
+    },
+    {
+        "command": "pin-github-action",
+        "install": "npm install -g pin-github-action"
+    },
+    {
+        "command": "stylist",
+        "install": "go install github.com/twelvelabs/stylist@latest"
+    }
+]
