@@ -1,12 +1,12 @@
 .DEFAULT_GOAL := help
 SHELL := /bin/bash
 
-APP_NAME := envctl
-BUILD_DIR := ./dist
-DST_DIR := /usr/local/bin
+NAME = $(shell jq -r '.project_name' dist/metadata.json)
+ARCH = $(shell jq -r '.runtime.goarch' dist/metadata.json)
+OS = $(shell jq -r '.runtime.goos' dist/metadata.json)
 
-CURRENT_SHA = $(shell git rev-parse --short HEAD)
-CURRENT_TS = $(shell date -I seconds)
+BUILD_PATH = ./dist/${NAME}_${OS}_${ARCH}/${NAME}
+DST_DIR = /usr/local/bin
 
 ##@ App
 
@@ -37,12 +37,12 @@ coverage: ## Show code coverage
 .PHONY: build
 build: ## Build the app
 	go mod tidy
-	go build -ldflags='-X main.version=dev -X main.commit=$(CURRENT_SHA) -X main.date=$(CURRENT_TS)' -o ${BUILD_DIR}/${APP_NAME} .
+	goreleaser build --clean --snapshot --single-target
 
 .PHONY: install
 install: build ## Install the app
 	install -d ${DST_DIR}
-	install -m755 ${BUILD_DIR}/${APP_NAME} ${DST_DIR}/
+	install -m755 ${BUILD_PATH} ${DST_DIR}/
 
 .PHONY: version
 version: ## Calculate the next release version
