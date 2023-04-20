@@ -1,6 +1,5 @@
 .DS_Store
 .cspellcache
 .env
-Brewfile.lock.json
 coverage.out
 dist/

@@ -16,7 +16,7 @@ done
 
 # cspell: disable
 
-brew bundle install
+brew bundle install --no-lock
 
 if ! command -v go-enum >/dev/null 2>&1; then
     go install github.com/abice/go-enum@latest
