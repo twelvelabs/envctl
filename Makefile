@@ -13,13 +13,11 @@ generate:
 
 .PHONY: lint
 lint: ## Lint the app
-	actionlint
 	stylist check
 
 .PHONY: format
 format: ## Format the app
-	gofmt -w .
-	pin-github-action .github/workflows/*.yml
+	stylist fix
 
 .PHONY: test
 test: ## Test the app

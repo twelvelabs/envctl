@@ -1,37 +1,43 @@
 #!/usr/bin/env bash
 set -o errexit -o errtrace -o nounset -o pipefail
 
-# Bootstrap dependencies.
-dependencies=(
-    "brew"
-    "go"
-    "npm"
-)
-for dependency in "${dependencies[@]}"; do
-    if ! command -v "${dependency}" >/dev/null 2>&1; then
-        echo "Unable to find dependency: ${dependency}."
-        exit 1
+# Ensure homebrew
+if command -v "brew" >/dev/null 2>&1; then
+    echo "Found dependency: brew."
+else
+    echo "Setup requires homebrew."
+    echo "Please follow the instructions at https://brew.sh"
+    exit 1
+fi
+
+# Ensure jq
+if command -v "jq" >/dev/null 2>&1; then
+    echo "Found dependency: jq."
+else
+    echo "Setup requires jq."
+    echo "Please run: brew install jq"
+    exit 1
+fi
+
+export HOMEBREW_NO_INSTALL_CLEANUP=1
+
+# Install dependencies
+count=$(jq '. | length' dependencies.json)
+for ((i = 0; i < count; i++)); do
+    command=$(jq -r '.['$i'].command' dependencies.json)
+    install=$(jq -r '.['$i'].install' dependencies.json)
+
+    if command -v "${command}" >/dev/null 2>&1; then
+        echo "Found dependency: ${command}."
+    else
+        echo "Installing dependency: ${command}..."
+        $install
     fi
 done
 
-# cspell: disable
-
-brew bundle install --no-lock
-
-if ! command -v go-enum >/dev/null 2>&1; then
-    go install github.com/abice/go-enum@latest
-fi
-
-if ! command -v gocovsh >/dev/null 2>&1; then
-    go install github.com/orlangure/gocovsh@latest
-fi
-
-if ! command -v cspell >/dev/null 2>&1; then
-    npm install -g cspell
-fi
-
-if ! command -v pin-github-action >/dev/null 2>&1; then
-    npm install -g pin-github-action
+# Bypass repo setup steps when in CI
+if [[ "${CI:-}" == "true" ]]; then
+    exit 0
 fi
 
 # Ensure local repo
@@ -51,6 +57,9 @@ if ! gh repo view --json url &>/dev/null; then
         set -o xtrace
         gh repo create
         sleep 1
+        if [[ "${GH_PAT:-}" != "" ]]; then
+            gh secret set GH_PAT --body "$GH_PAT"
+        fi
         git remote set-head origin --auto
         set +o xtrace
 

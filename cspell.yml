@@ -18,6 +18,7 @@ ignorePaths:
   - .gitignore
   - cspell.yml
   - dist/
+  - dependencies.json
   - .golangci.yml
   - go.mod
   - go.sum
