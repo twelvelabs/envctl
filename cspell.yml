@@ -46,7 +46,9 @@ words:
   - ifeq
   - ifneq
   - markdownlint
+  - rlcp
   - shellcheck
   - shfmt
   - sigstore
+  - trimpath
   - twelvelabs
