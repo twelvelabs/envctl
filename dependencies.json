@@ -1,51 +1,51 @@
 [
     {
         "command": "actionlint",
-        "install": "brew install actionlint"
+        "install": "brew install -q actionlint"
     },
     {
         "command": "gh",
-        "install": "brew install gh"
+        "install": "brew install -q gh"
     },
     {
         "command": "git",
-        "install": "brew install git"
+        "install": "brew install -q git"
     },
     {
         "command": "gitleaks",
-        "install": "brew install gitleaks"
+        "install": "brew install -q gitleaks"
     },
     {
         "command": "go",
-        "install": "brew install go"
+        "install": "brew install -q go"
     },
     {
         "command": "gocovsh",
-        "install": "brew install orlangure/tap/gocovsh"
+        "install": "brew install -q orlangure/tap/gocovsh"
     },
     {
         "command": "golangci-lint",
-        "install": "brew install golangci-lint"
+        "install": "brew install -q golangci-lint"
     },
     {
         "command": "goreleaser",
-        "install": "brew install goreleaser"
+        "install": "brew install -q goreleaser"
     },
     {
         "command": "gum",
-        "install": "brew install gum"
+        "install": "brew install -q gum"
     },
     {
         "command": "npm",
-        "install": "brew install node"
+        "install": "brew install -q node"
     },
     {
         "command": "shellcheck",
-        "install": "brew install shellcheck"
+        "install": "brew install -q shellcheck"
     },
     {
         "command": "shfmt",
-        "install": "brew install shfmt"
+        "install": "brew install -q shfmt"
     },
     {
         "command": "stylist",

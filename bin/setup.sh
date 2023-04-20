@@ -19,20 +19,21 @@ else
     exit 1
 fi
 
+export HOMEBREW_NO_INSTALL_CLEANUP=1
+
 # Install dependencies
-while read -r json; do
-    command=$(echo "$json" | jq -r '.command')
-    install=$(echo "$json" | jq -r '.install')
+count=$(jq '. | length' dependencies.json)
+for ((i = 0; i < count; i++)); do
+    command=$(jq -r '.['$i'].command' dependencies.json)
+    install=$(jq -r '.['$i'].install' dependencies.json)
 
     if command -v "${command}" >/dev/null 2>&1; then
         echo "Found dependency: ${command}."
     else
         echo "Installing dependency: ${command}..."
-        set -o xtrace
         $install
-        set +o xtrace
     fi
-done < <(jq --compact-output '.[]' dependencies.json)
+done
 
 # Bypass repo setup steps when in CI
 if [[ "${CI:-}" == "true" ]]; then
