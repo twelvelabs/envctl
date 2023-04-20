@@ -34,6 +34,11 @@ while read -r json; do
     fi
 done < <(jq --compact-output '.[]' dependencies.json)
 
+# Bypass repo setup steps when in CI
+if [[ "${CI:-}" == "true" ]]; then
+    exit 0
+fi
+
 # Ensure local repo
 if ! git rev-parse --is-inside-work-tree &>/dev/null; then
     if gum confirm "Create local git repo?"; then

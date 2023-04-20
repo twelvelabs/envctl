@@ -20,6 +20,10 @@
         "install": "brew install go"
     },
     {
+        "command": "gocovsh",
+        "install": "brew install orlangure/tap/gocovsh"
+    },
+    {
         "command": "golangci-lint",
         "install": "brew install golangci-lint"
     },
@@ -44,16 +48,12 @@
         "install": "brew install shfmt"
     },
     {
+        "command": "stylist",
+        "install": "go install github.com/twelvelabs/stylist@latest"
+    },
+    {
         "command": "cspell",
         "install": "npm install -g cspell"
-    },
-    {
-        "command": "go-enum",
-        "install": "go install github.com/abice/go-enum@latest"
-    },
-    {
-        "command": "gocovsh",
-        "install": "go install github.com/orlangure/gocovsh@latest"
     },
     {
         "command": "markdownlint",
@@ -62,9 +62,5 @@
     {
         "command": "pin-github-action",
         "install": "npm install -g pin-github-action"
-    },
-    {
-        "command": "stylist",
-        "install": "go install github.com/twelvelabs/stylist@latest"
     }
 ]
