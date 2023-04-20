@@ -57,6 +57,9 @@ if ! gh repo view --json url &>/dev/null; then
         set -o xtrace
         gh repo create
         sleep 1
+        if [[ "${GH_PAT:-}" != "" ]]; then
+            gh secret set GH_PAT --body "$GH_PAT"
+        fi
         git remote set-head origin --auto
         set +o xtrace
 

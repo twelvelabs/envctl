@@ -49,7 +49,7 @@
     },
     {
         "command": "stylist",
-        "install": "go install github.com/twelvelabs/stylist@latest"
+        "install": "brew install --quiet twelvelabs/tap/stylist"
     },
     {
         "command": "cspell",
