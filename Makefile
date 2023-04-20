@@ -31,7 +31,6 @@ coverage: ## Show code coverage
 
 .PHONY: build
 build: ## Build the app
-	go mod tidy
 	goreleaser build --clean --snapshot --single-target
 
 .PHONY: install
