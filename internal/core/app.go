@@ -5,10 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"runtime"
-	"runtime/debug"
 	"syscall"
-	"time"
 
 	"github.com/twelvelabs/termite/ui"
 )
@@ -19,20 +16,36 @@ var (
 	ctxKeyApp ctxKey = "github.com/twelvelabs/envctl/internal/core.App"
 )
 
+// App contains global and/or singleton application data.
+type App struct {
+	Config *Config
+	Meta   *Meta
+	IO     *ui.IOStreams
+	UI     *ui.UserInterface
+
+	ctx context.Context //nolint: containedctx
+}
+
 // AppForContext returns the app singleton stored in the given context.
 func AppForContext(ctx context.Context) *App {
 	return ctx.Value(ctxKeyApp).(*App)
 }
 
 // NewApp returns the default App singleton.
-func NewApp(version, commit, date string) (*App, error) {
-	meta := NewAppMeta(version, commit, date)
+func NewApp(version, commit, date, path string) (*App, error) {
+	config, err := NewConfigFromPath(path)
+	if err != nil {
+		return nil, err
+	}
+
+	meta := NewMeta(version, commit, date)
 	ios := ui.NewIOStreams()
 
 	app := &App{
-		Meta: meta,
-		IO:   ios,
-		UI:   ui.NewUserInterface(ios),
+		Config: config,
+		Meta:   meta,
+		IO:     ios,
+		UI:     ui.NewUserInterface(ios),
 	}
 
 	return app, nil
@@ -41,25 +54,19 @@ func NewApp(version, commit, date string) (*App, error) {
 // NewTestApp returns the test App singleton.
 // All properties will be configured for testing (mocks, stubs, etc).
 func NewTestApp() *App {
-	meta := NewAppMeta("test", "", "0")
+	config, _ := NewTestConfig()
+
+	meta := NewMeta("test", "", "0")
 	ios := ui.NewTestIOStreams()
 
 	app := &App{
-		Meta: meta,
-		IO:   ios,
-		UI:   ui.NewUserInterface(ios),
+		Config: config,
+		Meta:   meta,
+		IO:     ios,
+		UI:     ui.NewUserInterface(ios),
 	}
 
 	return app
-}
-
-// App contains global and/or singleton application data.
-type App struct {
-	Meta *AppMeta
-	IO   *ui.IOStreams
-	UI   *ui.UserInterface
-
-	ctx context.Context //nolint: containedctx
 }
 
 // Close ensures all app resources have been closed.
@@ -93,37 +100,4 @@ func (a *App) Context() context.Context {
 		a.ctx = context.WithValue(ctx, ctxKeyApp, a)
 	}
 	return a.ctx
-}
-
-// NewAppMeta returns a new AppMeta struct.
-func NewAppMeta(version, commit, date string) *AppMeta {
-	buildTime, _ := time.Parse(time.RFC3339, date)
-
-	meta := &AppMeta{
-		BuildCommit: commit,
-		BuildTime:   buildTime,
-		Version:     version,
-		GOOS:        runtime.GOOS,
-		GOARCH:      runtime.GOARCH,
-	}
-
-	if info, ok := debug.ReadBuildInfo(); ok {
-		meta.BuildGoVersion = info.GoVersion
-		meta.BuildVersion = info.Main.Version
-		meta.BuildChecksum = info.Main.Sum
-	}
-
-	return meta
-}
-
-// AppMeta contains application metadata (version, os, build info, etc).
-type AppMeta struct {
-	BuildCommit    string
-	BuildTime      time.Time
-	BuildGoVersion string
-	BuildVersion   string
-	BuildChecksum  string
-	Version        string
-	GOOS           string
-	GOARCH         string
 }

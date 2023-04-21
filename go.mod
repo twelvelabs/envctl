@@ -13,6 +13,8 @@ require (
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.6 // indirect
 	github.com/briandowns/spinner v1.23.0 // indirect
+	github.com/caarlos0/env/v8 v8.0.0 // indirect
+	github.com/creasty/defaults v1.7.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fatih/color v1.14.1 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect

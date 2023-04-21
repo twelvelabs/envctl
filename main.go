@@ -17,7 +17,7 @@ var (
 // The actual `main` logic.
 // Broken out so we can safely use defer (see [os.Exit] docs).
 func run() error {
-	app, err := core.NewApp(version, commit, date)
+	app, err := core.NewApp(version, commit, date, ".envctl.yaml")
 	if err != nil {
 		return err
 	}
