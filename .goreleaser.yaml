@@ -3,6 +3,8 @@ project_name: envctl
 before:
   hooks:
     - go mod tidy
+    - ./bin/completions.sh
+    - ./bin/manpages.sh
 
 builds:
   - env:
@@ -30,8 +32,12 @@ archives:
     files:
       - README.md
       - LICENSE
-      - completions/*
-      - manpages/*
+      - src: build/completions/*
+        dst: completions
+        strip_parent: true
+      - src: build/manpages/*
+        dst: manpages
+        strip_parent: true
     format: tar.gz
     format_overrides:
       - goos: windows
@@ -50,6 +56,12 @@ brews:
     license: "MIT"
     install: |-
       bin.install "envctl"
+      bash_completion.install "completions/envctl.bash" => "envctl"
+      zsh_completion.install "completions/envctl.zsh" => "_envctl"
+      fish_completion.install "completions/envctl.fish"
+      man1.install "manpages/envctl.1.gz"
+    test: |
+      system "#{bin}/envctl -v"
 
 checksum:
   name_template: "checksums.txt"

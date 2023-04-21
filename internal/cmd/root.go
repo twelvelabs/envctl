@@ -20,6 +20,10 @@ func NewRootCmd(app *envctl.App) *cobra.Command {
 		},
 	}
 
+	// Hide the built in `completion` subcommand
+	cmd.CompletionOptions.HiddenDefaultCmd = true
+
+	cmd.AddCommand(NewManCmd(app))
 	cmd.AddCommand(NewVersionCmd(app))
 
 	return cmd
