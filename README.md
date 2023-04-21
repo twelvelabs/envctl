@@ -1,6 +1,7 @@
 # envctl
 
 [![build](https://github.com/twelvelabs/envctl/actions/workflows/build.yml/badge.svg)](https://github.com/twelvelabs/envctl/actions/workflows/build.yml)
+[![codecov](https://codecov.io/gh/twelvelabs/envctl/branch/main/graph/badge.svg?token=jLMxTJcY08)](https://codecov.io/gh/twelvelabs/envctl)
 
 Manage project environment variables with ease. ✨
 
