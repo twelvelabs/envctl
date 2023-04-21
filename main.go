@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
+
+	"github.com/twelvelabs/envctl/internal/cmd"
+	"github.com/twelvelabs/envctl/internal/envctl"
 )
 
 var (
@@ -11,10 +14,21 @@ var (
 	date    = ""
 )
 
+// The actual `main` logic.
+// Broken out so we can safely use defer (see [os.Exit] docs).
+func run() error {
+	app, err := envctl.NewApp(version, commit, date)
+	if err != nil {
+		return err
+	}
+	defer app.Close()
+
+	return cmd.NewRootCmd(app).ExecuteContext(app.Context())
+}
+
 func main() {
-	fmt.Printf("Hello 👋 \n")
-	fmt.Printf(" - version: %s\n", version)
-	fmt.Printf(" - commit: %s\n", commit)
-	fmt.Printf(" - date: %s\n", date)
-	os.Exit(0)
+	if err := run(); err != nil {
+		fmt.Fprintln(os.Stderr, err.Error())
+		os.Exit(1)
+	}
 }

@@ -37,6 +37,7 @@ build: ## Build the app
 install: build ## Install the app
 	install -d ${INSTALL_DIR}
 	install -m755 "${ARTIFACT_PATH}" ${INSTALL_DIR}/
+	du -h "${ARTIFACT_PATH}"
 
 .PHONY: version
 version: ## Calculate the next release version
