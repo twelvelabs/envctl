@@ -5,10 +5,10 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/twelvelabs/envctl/internal/envctl"
+	"github.com/twelvelabs/envctl/internal/core"
 )
 
-func NewRootCmd(app *envctl.App) *cobra.Command {
+func NewRootCmd(app *core.App) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "envctl",
 		Short:   "Manage project environment variables",

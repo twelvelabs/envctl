@@ -1,4 +1,4 @@
-package envctl
+package core
 
 import (
 	"testing"

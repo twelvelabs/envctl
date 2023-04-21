@@ -9,10 +9,10 @@ import (
 	"github.com/muesli/roff"
 	"github.com/spf13/cobra"
 
-	"github.com/twelvelabs/envctl/internal/envctl"
+	"github.com/twelvelabs/envctl/internal/core"
 )
 
-func NewManCmd(app *envctl.App) *cobra.Command {
+func NewManCmd(app *core.App) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                   "man",
 		Short:                 "Generates manpages for the app",

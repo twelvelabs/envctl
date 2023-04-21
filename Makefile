@@ -2,10 +2,12 @@
 SHELL := /bin/bash
 
 BIN_NAME = $(shell jq -r '.project_name' dist/metadata.json)
+CMP_NAME = ${BIN_NAME}.bash
+MAN_NAME = ${BIN_NAME}.1.gz
 
 BIN_BUILD_PATH = $(shell jq -r '.[0].path' dist/artifacts.json)
-CMP_BUILD_PATH = build/completions/${BIN_NAME}.bash
-MAN_BUILD_PATH = build/manpages/${BIN_NAME}.1.gz
+CMP_BUILD_PATH = build/completions/${CMP_NAME}
+MAN_BUILD_PATH = build/manpages/${MAN_NAME}
 
 BIN_INSTALL_DIR = /usr/local/bin
 CMP_INSTALL_DIR = $(shell brew --prefix)/etc/bash_completion.d
@@ -48,6 +50,12 @@ install: build ## Install the app
 	install -d ${BIN_INSTALL_DIR}
 	install -m755 "${BIN_BUILD_PATH}" ${BIN_INSTALL_DIR}/
 	du -h "${BIN_BUILD_PATH}"
+
+.PHONY: uninstall
+uninstall: ## Uninstall the app
+	rm -f ${BIN_INSTALL_DIR}/${BIN_NAME}
+	rm -f ${CMP_INSTALL_DIR}/${CMP_NAME}
+	rm -f ${MAN_INSTALL_DIR}/${MAN_NAME}
 
 .PHONY: version
 version: ## Calculate the next release version

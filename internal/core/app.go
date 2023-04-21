@@ -1,4 +1,4 @@
-package envctl
+package core
 
 import (
 	"context"
@@ -16,7 +16,7 @@ import (
 type ctxKey string
 
 var (
-	ctxKeyApp ctxKey = "github.com/twelvelabs/envctl/internal/envctl.App"
+	ctxKeyApp ctxKey = "github.com/twelvelabs/envctl/internal/core.App"
 )
 
 // AppForContext returns the app singleton stored in the given context.

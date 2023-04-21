@@ -1,56 +1,32 @@
 package cmd
 
 import (
-	"context"
 	"fmt"
 	"time"
 
 	"github.com/spf13/cobra"
 
-	"github.com/twelvelabs/envctl/internal/envctl"
+	"github.com/twelvelabs/envctl/internal/core"
 )
 
-func NewVersionCmd(app *envctl.App) *cobra.Command {
-	action := NewVersionAction(app)
-
+func NewVersionCmd(app *core.App) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "version",
 		Short: "Show full version info",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := action.Validate(args); err != nil {
-				return err
-			}
-			return action.Run(cmd.Context())
+			fmt.Fprintln(app.IO.Out, "Version:", app.Meta.Version)
+			fmt.Fprintln(app.IO.Out, "GOOS:", app.Meta.GOOS)
+			fmt.Fprintln(app.IO.Out, "GOARCH:", app.Meta.GOARCH)
+			fmt.Fprintln(app.IO.Out, "")
+			fmt.Fprintln(app.IO.Out, "Build Time:", app.Meta.BuildTime.Format(time.RFC3339))
+			fmt.Fprintln(app.IO.Out, "Build Commit:", app.Meta.BuildCommit)
+			fmt.Fprintln(app.IO.Out, "Build Version:", app.Meta.BuildVersion)
+			fmt.Fprintln(app.IO.Out, "Build Checksum:", app.Meta.BuildChecksum)
+			fmt.Fprintln(app.IO.Out, "Build Go Version:", app.Meta.BuildGoVersion)
+			return nil
 		},
 	}
 
 	return cmd
-}
-
-func NewVersionAction(app *envctl.App) *VersionAction {
-	return &VersionAction{
-		App: app,
-	}
-}
-
-type VersionAction struct {
-	*envctl.App
-}
-
-func (a *VersionAction) Validate(_ []string) error {
-	return nil
-}
-
-func (a *VersionAction) Run(_ context.Context) error {
-	fmt.Fprintln(a.IO.Out, "Version:", a.Meta.Version)
-	fmt.Fprintln(a.IO.Out, "GOOS:", a.Meta.GOOS)
-	fmt.Fprintln(a.IO.Out, "GOARCH:", a.Meta.GOARCH)
-	fmt.Fprintln(a.IO.Out, "")
-	fmt.Fprintln(a.IO.Out, "Build Time:", a.Meta.BuildTime.Format(time.RFC3339))
-	fmt.Fprintln(a.IO.Out, "Build Commit:", a.Meta.BuildCommit)
-	fmt.Fprintln(a.IO.Out, "Build Version:", a.Meta.BuildVersion)
-	fmt.Fprintln(a.IO.Out, "Build Checksum:", a.Meta.BuildChecksum)
-	fmt.Fprintln(a.IO.Out, "Build Go Version:", a.Meta.BuildGoVersion)
-	return nil
 }

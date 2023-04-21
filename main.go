@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/twelvelabs/envctl/internal/cmd"
-	"github.com/twelvelabs/envctl/internal/envctl"
+	"github.com/twelvelabs/envctl/internal/core"
 )
 
 var (
@@ -17,7 +17,7 @@ var (
 // The actual `main` logic.
 // Broken out so we can safely use defer (see [os.Exit] docs).
 func run() error {
-	app, err := envctl.NewApp(version, commit, date)
+	app, err := core.NewApp(version, commit, date)
 	if err != nil {
 		return err
 	}
