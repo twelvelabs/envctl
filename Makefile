@@ -1,9 +1,15 @@
 .DEFAULT_GOAL := help
 SHELL := /bin/bash
 
-ARTIFACT_PATH = $(shell jq -r '.[0].path' dist/artifacts.json)
-INSTALL_DIR = /usr/local/bin
+BIN_NAME = $(shell jq -r '.project_name' dist/metadata.json)
 
+BIN_BUILD_PATH = $(shell jq -r '.[0].path' dist/artifacts.json)
+CMP_BUILD_PATH = build/completions/${BIN_NAME}.bash
+MAN_BUILD_PATH = build/manpages/${BIN_NAME}.1.gz
+
+BIN_INSTALL_DIR = /usr/local/bin
+CMP_INSTALL_DIR = $(shell brew --prefix)/etc/bash_completion.d
+MAN_INSTALL_DIR = /usr/local/share/man/man1
 
 ##@ App
 
@@ -35,8 +41,13 @@ build: ## Build the app
 
 .PHONY: install
 install: build ## Install the app
-	install -d ${INSTALL_DIR}
-	install -m755 "${ARTIFACT_PATH}" ${INSTALL_DIR}/
+	install -d ${MAN_INSTALL_DIR}
+	install -m644 "${MAN_BUILD_PATH}" ${MAN_INSTALL_DIR}/
+	install -d ${CMP_INSTALL_DIR}
+	install -m755 "${CMP_BUILD_PATH}" ${CMP_INSTALL_DIR}/
+	install -d ${BIN_INSTALL_DIR}
+	install -m755 "${BIN_BUILD_PATH}" ${BIN_INSTALL_DIR}/
+	du -h "${BIN_BUILD_PATH}"
 
 .PHONY: version
 version: ## Calculate the next release version
@@ -45,6 +56,10 @@ version: ## Calculate the next release version
 .PHONY: release
 release: ## Create a new release tag
 	./bin/release.sh
+
+.PHONY: goreleaser
+goreleaser:
+	goreleaser release --snapshot --clean
 
 
 ##@ Other

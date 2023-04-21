@@ -40,6 +40,19 @@ if [[ "${CI:-}" == "true" ]]; then
     exit 0
 fi
 
+# Ensure $USER owns /usr/local/{bin,share}.
+# Allows for running `make install` w/out sudo interruptions.
+if [[ ! -w /usr/local/bin ]]; then
+    set -o xtrace
+    sudo chown -R "${USER}" /usr/local/bin
+    set +o xtrace
+fi
+if [[ ! -w /usr/local/share ]]; then
+    set -o xtrace
+    sudo chown -R "${USER}" /usr/local/share
+    set +o xtrace
+fi
+
 # Ensure local repo
 if ! git rev-parse --is-inside-work-tree &>/dev/null; then
     if gum confirm "Create local git repo?"; then

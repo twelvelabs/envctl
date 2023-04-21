@@ -2,4 +2,5 @@
 .cspellcache
 .env
 coverage.out
+build/
 dist/

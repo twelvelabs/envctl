@@ -16,6 +16,7 @@ ignorePaths:
   - .git/
   - .gitattributes
   - .gitignore
+  - .vscode/
   - cspell.yml
   - dist/
   - dependencies.json
@@ -29,6 +30,7 @@ version: "0.2"
 words:
   - buildcache
   - codecov
+  - containedctx
   - coverprofile
   - devcontainer
   - dotfiles
@@ -46,6 +48,7 @@ words:
   - ifeq
   - ifneq
   - markdownlint
+  - nolint
   - rlcp
   - shellcheck
   - shfmt
