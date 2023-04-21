@@ -1,4 +1,5 @@
 excludes:
+  - build/**
   - dist/**
   - .cspellcache
 output:
