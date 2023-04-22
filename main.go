@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/twelvelabs/envctl/internal/cmd"
@@ -28,7 +27,6 @@ func run() error {
 
 func main() {
 	if err := run(); err != nil {
-		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
 }

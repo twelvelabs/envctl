@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"fmt"
+	"time"
 
 	"github.com/spf13/cobra"
 
@@ -14,10 +14,18 @@ func NewRootCmd(app *core.App) *cobra.Command {
 		Short:   "Manage project environment variables",
 		Version: app.Meta.Version,
 		Args:    cobra.NoArgs,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Printf("Hello 👋 \n")
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			app.Logger.Debug("App initialized",
+				"config", app.Config.ConfigPath,
+				"duration", time.Since(app.CreatedAt),
+			)
 			return nil
 		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			app.UI.Out("Hello 👋 \n")
+			return nil
+		},
+		SilenceUsage: true,
 	}
 
 	// Hide the built in `completion` subcommand

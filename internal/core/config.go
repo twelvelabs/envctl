@@ -8,7 +8,8 @@ import (
 
 type Config struct {
 	ConfigPath string
-	Debug      bool `yaml:"debug" env:"DEBUG"`
+	Debug      bool   `yaml:"debug" env:"DEBUG"`
+	LogLevel   string `yaml:"log_level" env:"LOG_LEVEL" default:"warn" validate:"oneof=debug info warn error fatal"`
 }
 
 // NewTestConfig returns a new Config for unit tests

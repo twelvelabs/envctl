@@ -40,16 +40,16 @@ coverage: ## Show code coverage
 .PHONY: build
 build: ## Build the app
 	goreleaser build --clean --snapshot --single-target
+	du -h "${BIN_BUILD_PATH}"
 
 .PHONY: install
 install: build ## Install the app
-	install -d ${MAN_INSTALL_DIR}
-	install -m644 "${MAN_BUILD_PATH}" ${MAN_INSTALL_DIR}/
-	install -d ${CMP_INSTALL_DIR}
-	install -m755 "${CMP_BUILD_PATH}" ${CMP_INSTALL_DIR}/
 	install -d ${BIN_INSTALL_DIR}
 	install -m755 "${BIN_BUILD_PATH}" ${BIN_INSTALL_DIR}/
-	du -h "${BIN_BUILD_PATH}"
+	install -d ${CMP_INSTALL_DIR}
+	install -m755 "${CMP_BUILD_PATH}" ${CMP_INSTALL_DIR}/
+	install -d ${MAN_INSTALL_DIR}
+	install -m644 "${MAN_BUILD_PATH}" ${MAN_INSTALL_DIR}/
 
 .PHONY: uninstall
 uninstall: ## Uninstall the app

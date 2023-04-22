@@ -50,6 +50,7 @@ words:
   - ifneq
   - markdownlint
   - nolint
+  - oneof
   - rlcp
   - shellcheck
   - shfmt

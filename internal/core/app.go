@@ -2,11 +2,9 @@ package core
 
 import (
 	"context"
-	"fmt"
-	"os"
-	"os/signal"
-	"syscall"
+	"time"
 
+	"github.com/charmbracelet/log"
 	"github.com/twelvelabs/termite/ui"
 )
 
@@ -18,10 +16,12 @@ var (
 
 // App contains global and/or singleton application data.
 type App struct {
-	Config *Config
-	Meta   *Meta
-	IO     *ui.IOStreams
-	UI     *ui.UserInterface
+	CreatedAt time.Time
+	Config    *Config
+	Logger    *log.Logger
+	Meta      *Meta
+	IO        *ui.IOStreams
+	UI        *ui.UserInterface
 
 	ctx context.Context //nolint: containedctx
 }
@@ -33,6 +33,8 @@ func AppForContext(ctx context.Context) *App {
 
 // NewApp returns the default App singleton.
 func NewApp(version, commit, date, path string) (*App, error) {
+	created := time.Now()
+
 	config, err := NewConfigFromPath(path)
 	if err != nil {
 		return nil, err
@@ -40,12 +42,15 @@ func NewApp(version, commit, date, path string) (*App, error) {
 
 	meta := NewMeta(version, commit, date)
 	ios := ui.NewIOStreams()
+	logger := newLogger(ios, config)
 
 	app := &App{
-		Config: config,
-		Meta:   meta,
-		IO:     ios,
-		UI:     ui.NewUserInterface(ios),
+		CreatedAt: created,
+		Config:    config,
+		Logger:    logger,
+		Meta:      meta,
+		IO:        ios,
+		UI:        ui.NewUserInterface(ios),
 	}
 
 	return app, nil
@@ -54,16 +59,20 @@ func NewApp(version, commit, date, path string) (*App, error) {
 // NewTestApp returns the test App singleton.
 // All properties will be configured for testing (mocks, stubs, etc).
 func NewTestApp() *App {
+	created := time.Now()
 	config, _ := NewTestConfig()
 
 	meta := NewMeta("test", "", "0")
 	ios := ui.NewTestIOStreams()
+	logger := newLogger(ios, config)
 
 	app := &App{
-		Config: config,
-		Meta:   meta,
-		IO:     ios,
-		UI:     ui.NewUserInterface(ios),
+		CreatedAt: created,
+		Config:    config,
+		Logger:    logger,
+		Meta:      meta,
+		IO:        ios,
+		UI:        ui.NewUserInterface(ios),
 	}
 
 	return app
@@ -71,33 +80,27 @@ func NewTestApp() *App {
 
 // Close ensures all app resources have been closed.
 func (a *App) Close() error {
+	// Add any db/file closing here if needed.
 	return nil
 }
 
 // Context returns the root [context.Context] for the app.
-// The root context is automatically configured for graceful termination,
-// and will be canceled on SIGINT or SIGTERM.
-//
-// Application logic should make use of the context done channel:
-//
-//	// do long running logic in goroutine and block on done channel
-//	go func() { ... }()
-//	<-ctx.Done()
-//	// when done channel closes (i.e. SIGINT received), cancel operation
-//	cancelOperation()
 func (a *App) Context() context.Context {
 	if a.ctx == nil {
-		done := make(chan os.Signal, 1)
-		signal.Notify(done, syscall.SIGINT, syscall.SIGTERM)
-
-		ctx, cancel := context.WithCancel(context.Background())
-		go func() {
-			sig := <-done
-			fmt.Fprintf(a.IO.Err, "Received signal: %+v\n", sig)
-			cancel()
-		}()
-
-		a.ctx = context.WithValue(ctx, ctxKeyApp, a)
+		a.ctx = context.WithValue(context.Background(), ctxKeyApp, a)
 	}
 	return a.ctx
+}
+
+func newLogger(ios *ui.IOStreams, config *Config) *log.Logger {
+	level := config.LogLevel
+	if config.Debug {
+		level = "debug"
+	}
+	return log.NewWithOptions(ios.Err, log.Options{
+		Level:           log.ParseLevel(level),
+		ReportCaller:    true,
+		ReportTimestamp: true,
+		TimeFormat:      time.Kitchen,
+	})
 }
