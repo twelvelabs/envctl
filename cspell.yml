@@ -18,6 +18,7 @@ ignorePaths:
   - .gitignore
   - .vscode/
   - cspell.yml
+  - build/
   - dist/
   - dependencies.json
   - .golangci.yml
