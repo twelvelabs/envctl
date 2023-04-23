@@ -9,6 +9,7 @@ import (
 )
 
 func NewRootCmd(app *core.App) *cobra.Command {
+	noPrompt := false
 	verbosity := 0
 
 	cmd := &cobra.Command{
@@ -18,6 +19,9 @@ func NewRootCmd(app *core.App) *cobra.Command {
 		Args:    cobra.NoArgs,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			app.SetVerbosity(verbosity)
+			if noPrompt {
+				app.IO.SetInteractive(false)
+			}
 
 			app.Logger.Debug("App initialized",
 				"config", app.Config.ConfigPath,
@@ -43,6 +47,7 @@ func NewRootCmd(app *core.App) *cobra.Command {
 	)
 
 	flags.CountVarP(&verbosity, "verbose", "v", "enable verbose logging (increase via -vv)")
+	flags.BoolVar(&noPrompt, "no-prompt", noPrompt, "do not prompt for input")
 
 	// Hide the built in `completion` subcommand
 	cmd.CompletionOptions.HiddenDefaultCmd = true
