@@ -18,6 +18,7 @@ func NewRootCmd(app *core.App) *cobra.Command {
 		Args:    cobra.NoArgs,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			app.SetVerbosity(verbosity)
+
 			app.Logger.Debug("App initialized",
 				"config", app.Config.ConfigPath,
 				"duration", time.Since(app.CreatedAt),
@@ -25,7 +26,8 @@ func NewRootCmd(app *core.App) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			app.UI.Out("Hello 👋 \n")
+			name := app.UI.Cyan("envctl")
+			app.UI.Out("Hello from %s 👋 \n", name)
 			return nil
 		},
 		SilenceUsage: true,

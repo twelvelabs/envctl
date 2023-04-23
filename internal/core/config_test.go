@@ -24,6 +24,7 @@ func TestNewConfigFromPath(t *testing.T) {
 			},
 			want: &Config{
 				ConfigPath: filepath.Join("testdata", "config", "valid.yaml"),
+				Color:      false,
 				Debug:      true,
 				LogLevel:   "warn",
 			},

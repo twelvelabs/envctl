@@ -18,8 +18,9 @@ const (
 
 type Config struct {
 	ConfigPath string
-	Debug      bool   `yaml:"debug" env:"DEBUG"`
-	LogLevel   string `yaml:"log_level" env:"LOG_LEVEL" default:"warn" validate:"oneof=debug info warn error fatal"`
+	Color      bool   `yaml:"color" env:"ENVCTL_COLOR" default:"true"`
+	Debug      bool   `yaml:"debug" env:"ENVCTL_DEBUG"`
+	LogLevel   string `yaml:"log_level" env:"ENVCTL_LOG_LEVEL" default:"warn" validate:"oneof=debug info warn error fatal"`
 }
 
 // NewTestConfig returns a new Config for unit tests
@@ -36,6 +37,9 @@ func NewConfigFromPath(path string) (*Config, error) {
 	}
 	config.ConfigPath = path
 
+	if !config.Color {
+		os.Setenv("NO_COLOR", "1")
+	}
 	return config, nil
 }
 
