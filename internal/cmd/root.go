@@ -9,12 +9,15 @@ import (
 )
 
 func NewRootCmd(app *core.App) *cobra.Command {
+	verbosity := 0
+
 	cmd := &cobra.Command{
 		Use:     "envctl",
 		Short:   "Manage project environment variables",
 		Version: app.Meta.Version,
 		Args:    cobra.NoArgs,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			app.SetVerbosity(verbosity)
 			app.Logger.Debug("App initialized",
 				"config", app.Config.ConfigPath,
 				"duration", time.Since(app.CreatedAt),
@@ -34,8 +37,10 @@ func NewRootCmd(app *core.App) *cobra.Command {
 		core.ConfigPathLongFlag,
 		core.ConfigPathShortFlag,
 		app.Config.ConfigPath,
-		"Config path",
+		"config path",
 	)
+
+	flags.CountVarP(&verbosity, "verbose", "v", "enable verbose logging (increase via -vv)")
 
 	// Hide the built in `completion` subcommand
 	cmd.CompletionOptions.HiddenDefaultCmd = true

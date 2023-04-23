@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/charmbracelet/log"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -38,4 +39,20 @@ func TestAppForContext(t *testing.T) {
 	ctx := app.Context()
 
 	assert.Equal(t, app, AppForContext(ctx))
+}
+
+func TestApp_SetVerbosity(t *testing.T) {
+	app := NewTestApp()
+
+	// default
+	assert.Equal(t, log.WarnLevel, app.Logger.GetLevel())
+
+	app.SetVerbosity(0) // noop
+	assert.Equal(t, log.WarnLevel, app.Logger.GetLevel())
+	app.SetVerbosity(1) // info
+	assert.Equal(t, log.InfoLevel, app.Logger.GetLevel())
+	app.SetVerbosity(2) // debug
+	assert.Equal(t, log.DebugLevel, app.Logger.GetLevel())
+	app.SetVerbosity(99) // capped to debug
+	assert.Equal(t, log.DebugLevel, app.Logger.GetLevel())
 }

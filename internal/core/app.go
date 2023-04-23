@@ -10,8 +10,11 @@ import (
 
 type ctxKey string
 
-var (
+const (
 	ctxKeyApp ctxKey = "github.com/twelvelabs/envctl/internal/core.App"
+
+	verbosityInfo  = 1
+	verbosityDebug = 2
 )
 
 // App contains global and/or singleton application data.
@@ -90,6 +93,21 @@ func (a *App) Context() context.Context {
 		a.ctx = context.WithValue(context.Background(), ctxKeyApp, a)
 	}
 	return a.ctx
+}
+
+// SetVerbosity sets the log level for the given value.
+//   - 1: INFO
+//   - 2: DEBUG
+func (a *App) SetVerbosity(value int) {
+	if value > verbosityDebug {
+		value = verbosityDebug
+	}
+	switch value {
+	case verbosityInfo:
+		a.Logger.SetLevel(log.InfoLevel)
+	case verbosityDebug:
+		a.Logger.SetLevel(log.DebugLevel)
+	}
 }
 
 func newLogger(ios *ui.IOStreams, config *Config) *log.Logger {

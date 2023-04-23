@@ -61,7 +61,7 @@ brews:
       fish_completion.install "completions/envctl.fish"
       man1.install "manpages/envctl.1.gz"
     test: |
-      system "#{bin}/envctl -v"
+      system "#{bin}/envctl --version"
 
 checksum:
   name_template: "checksums.txt"
