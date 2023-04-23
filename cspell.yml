@@ -51,6 +51,7 @@ words:
   - markdownlint
   - nolint
   - oneof
+  - pflag
   - rlcp
   - shellcheck
   - shfmt

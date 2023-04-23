@@ -28,6 +28,15 @@ func NewRootCmd(app *core.App) *cobra.Command {
 		SilenceUsage: true,
 	}
 
+	flags := cmd.PersistentFlags()
+	flags.StringVarP(
+		&app.Config.ConfigPath,
+		core.ConfigPathLongFlag,
+		core.ConfigPathShortFlag,
+		app.Config.ConfigPath,
+		"Config path",
+	)
+
 	// Hide the built in `completion` subcommand
 	cmd.CompletionOptions.HiddenDefaultCmd = true
 

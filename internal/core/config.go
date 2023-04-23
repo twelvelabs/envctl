@@ -1,9 +1,19 @@
 package core
 
 import (
+	"errors"
 	"fmt"
+	"os"
 
+	"github.com/spf13/pflag"
 	"github.com/twelvelabs/termite/conf"
+)
+
+const (
+	ConfigPathDefault   = ".envctl.yaml"
+	ConfigPathEnv       = "ENVCTL_CONFIG"
+	ConfigPathLongFlag  = "config"
+	ConfigPathShortFlag = "c"
 )
 
 type Config struct {
@@ -19,7 +29,6 @@ func NewTestConfig() (*Config, error) {
 }
 
 // NewConfigFromPath returns a new config for the file at path.
-// If path is empty, uses `.envctl.yaml`.
 func NewConfigFromPath(path string) (*Config, error) {
 	config, err := conf.NewLoader(&Config{}, path).Load()
 	if err != nil {
@@ -28,4 +37,35 @@ func NewConfigFromPath(path string) (*Config, error) {
 	config.ConfigPath = path
 
 	return config, nil
+}
+
+// ConfigPath resolves and returns the config path.
+// Lookup order:
+//   - Flag
+//   - Environment variable
+//   - Default path name
+func ConfigPath(args []string) (string, error) {
+	path := ConfigPathDefault
+	if p := os.Getenv(ConfigPathEnv); p != "" {
+		path = p
+	}
+
+	// Create a minimal, duplicate flag set to determine just the config path
+	// (the remaining flags are defined on the cobra.Command flag set).
+	// Using two different sets because Cobra doesn't parse flags until _after_
+	// we have instantiated the app (and thus the Config).
+	fs := pflag.NewFlagSet("config-args", pflag.ContinueOnError)
+	fs.StringVarP(&path, ConfigPathLongFlag, ConfigPathShortFlag, path, "")
+	// Ignore all the flags used by the main Cobra flagset.
+	fs.ParseErrorsWhitelist.UnknownFlags = true
+	// Suppress the default usage shown when the `--help` flag is present
+	// (otherwise we end up w/ a duplicate of what Cobra shows).
+	fs.Usage = func() {}
+
+	err := fs.Parse(args)
+	if err != nil && !errors.Is(err, pflag.ErrHelp) {
+		return "", fmt.Errorf("unable to parse config flag: %w", err)
+	}
+
+	return path, nil
 }

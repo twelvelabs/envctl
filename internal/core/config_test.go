@@ -46,3 +46,81 @@ func TestNewConfigFromPath(t *testing.T) {
 		})
 	}
 }
+
+func TestConfigPath(t *testing.T) {
+	type args struct {
+		args []string
+	}
+	tests := []struct {
+		name      string
+		args      args
+		setup     func(t *testing.T)
+		want      string
+		assertion assert.ErrorAssertionFunc
+	}{
+		{
+			name:      "should return default config path",
+			want:      ConfigPathDefault,
+			assertion: assert.NoError,
+		},
+		{
+			setup: func(t *testing.T) {
+				t.Helper()
+				t.Setenv(ConfigPathEnv, "from_env.yaml")
+			},
+			name:      "should return config path from env",
+			want:      "from_env.yaml",
+			assertion: assert.NoError,
+		},
+		{
+			setup: func(t *testing.T) {
+				t.Helper()
+				t.Setenv(ConfigPathEnv, "from_env.yaml")
+			},
+			args: args{
+				args: []string{
+					"--" + ConfigPathLongFlag,
+					"from_flag.yaml",
+				},
+			},
+			name:      "should return config path from long flag",
+			want:      "from_flag.yaml",
+			assertion: assert.NoError,
+		},
+		{
+			setup: func(t *testing.T) {
+				t.Helper()
+				t.Setenv(ConfigPathEnv, "from_env.yaml")
+			},
+			args: args{
+				args: []string{
+					"-" + ConfigPathShortFlag,
+					"from_flag.yaml",
+				},
+			},
+			name:      "should return config path from short flag",
+			want:      "from_flag.yaml",
+			assertion: assert.NoError,
+		},
+		{
+			args: args{
+				args: []string{
+					"---",
+				},
+			},
+			name:      "should return an error when unable to parse args",
+			want:      "",
+			assertion: assert.Error,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.setup != nil {
+				tt.setup(t)
+			}
+			got, err := ConfigPath(tt.args.args)
+			tt.assertion(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
