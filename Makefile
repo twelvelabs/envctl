@@ -40,7 +40,6 @@ coverage: ## Show code coverage
 .PHONY: build
 build: ## Build the app
 	goreleaser build --clean --snapshot --single-target
-	du -h "${BIN_BUILD_PATH}"
 
 .PHONY: install
 install: build ## Install the app
