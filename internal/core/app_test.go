@@ -4,7 +4,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/charmbracelet/log"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -15,7 +14,6 @@ func TestNewApp(t *testing.T) {
 
 	assert.NotNil(t, app)
 	assert.NoError(t, err)
-
 	assert.Equal(t, path, app.Config.ConfigPath)
 }
 
@@ -41,18 +39,51 @@ func TestAppForContext(t *testing.T) {
 	assert.Equal(t, app, AppForContext(ctx))
 }
 
-func TestApp_SetVerbosity(t *testing.T) {
-	app := NewTestApp()
+func TestApp_Init(t *testing.T) {
+	path := filepath.Join("testdata", "config", "valid.yaml")
+	app, err := NewApp("", "", "", path)
+	assert.NoError(t, err)
 
-	// default
-	assert.Equal(t, log.WarnLevel, app.Logger.GetLevel())
+	assert.Nil(t, app.IO)
+	assert.Nil(t, app.UI)
+	assert.Nil(t, app.Logger)
 
-	app.SetVerbosity(0) // noop
-	assert.Equal(t, log.WarnLevel, app.Logger.GetLevel())
-	app.SetVerbosity(1) // info
-	assert.Equal(t, log.InfoLevel, app.Logger.GetLevel())
-	app.SetVerbosity(2) // debug
-	assert.Equal(t, log.DebugLevel, app.Logger.GetLevel())
-	app.SetVerbosity(99) // capped to debug
-	assert.Equal(t, log.DebugLevel, app.Logger.GetLevel())
+	err = app.Init()
+	assert.NoError(t, err)
+
+	assert.NotNil(t, app.IO)
+	assert.NotNil(t, app.UI)
+	assert.NotNil(t, app.Logger)
+}
+
+func TestApp_Init_WhenNoColor(t *testing.T) {
+	path := filepath.Join("testdata", "config", "valid.yaml")
+	app, err := NewApp("", "", "", path)
+	assert.NoError(t, err)
+
+	err = app.Init()
+	assert.NoError(t, err)
+	app.IO.SetColorEnabled(true)
+
+	app.Config.Color = false
+	err = app.Init()
+	assert.NoError(t, err)
+
+	assert.Equal(t, false, app.IO.IsColorEnabled())
+}
+
+func TestApp_Init_WhenNoPrompt(t *testing.T) {
+	path := filepath.Join("testdata", "config", "valid.yaml")
+	app, err := NewApp("", "", "", path)
+	assert.NoError(t, err)
+
+	err = app.Init()
+	assert.NoError(t, err)
+	app.IO.SetInteractive(true)
+
+	app.Config.Prompt = false
+	err = app.Init()
+	assert.NoError(t, err)
+
+	assert.Equal(t, false, app.IO.IsInteractive())
 }

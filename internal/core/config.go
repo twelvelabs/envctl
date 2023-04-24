@@ -10,16 +10,15 @@ import (
 )
 
 const (
-	ConfigPathDefault   = ".envctl.yaml"
-	ConfigPathEnv       = "ENVCTL_CONFIG"
-	ConfigPathLongFlag  = "config"
-	ConfigPathShortFlag = "c"
+	ConfigPathDefault = ".envctl.yaml"
+	ConfigPathEnv     = "ENVCTL_CONFIG"
 )
 
 type Config struct {
 	ConfigPath string
 	Color      bool   `yaml:"color" env:"ENVCTL_COLOR" default:"true"`
 	Debug      bool   `yaml:"debug" env:"ENVCTL_DEBUG"`
+	Prompt     bool   `yaml:"prompt" env:"ENVCTL_PROMPT" default:"true"`
 	LogLevel   string `yaml:"log_level" env:"ENVCTL_LOG_LEVEL" default:"warn" validate:"oneof=debug info warn error fatal"`
 }
 
@@ -36,10 +35,6 @@ func NewConfigFromPath(path string) (*Config, error) {
 		return nil, fmt.Errorf("config load: %w", err)
 	}
 	config.ConfigPath = path
-
-	if !config.Color {
-		os.Setenv("NO_COLOR", "1")
-	}
 	return config, nil
 }
 
@@ -59,7 +54,7 @@ func ConfigPath(args []string) (string, error) {
 	// Using two different sets because Cobra doesn't parse flags until _after_
 	// we have instantiated the app (and thus the Config).
 	fs := pflag.NewFlagSet("config-args", pflag.ContinueOnError)
-	fs.StringVarP(&path, ConfigPathLongFlag, ConfigPathShortFlag, path, "")
+	fs.StringVarP(&path, "config", "c", path, "")
 	// Ignore all the flags used by the main Cobra flagset.
 	fs.ParseErrorsWhitelist.UnknownFlags = true
 	// Suppress the default usage shown when the `--help` flag is present

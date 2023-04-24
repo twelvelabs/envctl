@@ -7,10 +7,11 @@ import (
 	"github.com/twelvelabs/envctl/internal/core"
 )
 
+// Vars passed in by goreleaser (see `builds[0].ldflags` in .goreleaser.yaml).
 var (
-	version = "dev"
-	commit  = ""
-	date    = ""
+	version = "dev" // release version
+	commit  = ""    // release commit SHA
+	date    = ""    // release commit date
 )
 
 // The actual `main` logic.

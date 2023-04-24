@@ -2,9 +2,9 @@ package core
 
 import (
 	"context"
+	"os"
 	"time"
 
-	"github.com/charmbracelet/log"
 	"github.com/twelvelabs/termite/ui"
 )
 
@@ -12,19 +12,15 @@ type ctxKey string
 
 const (
 	ctxKeyApp ctxKey = "github.com/twelvelabs/envctl/internal/core.App"
-
-	verbosityInfo  = 1
-	verbosityDebug = 2
 )
 
 // App contains global and/or singleton application data.
 type App struct {
-	CreatedAt time.Time
-	Config    *Config
-	Logger    *log.Logger
-	Meta      *Meta
-	IO        *ui.IOStreams
-	UI        *ui.UserInterface
+	Config *Config
+	Logger *Logger
+	Meta   *Meta
+	IO     *ui.IOStreams
+	UI     *ui.UserInterface
 
 	ctx context.Context //nolint: containedctx
 }
@@ -35,50 +31,61 @@ func AppForContext(ctx context.Context) *App {
 }
 
 // NewApp returns the default App singleton.
+// It will be minimally initialized with metadata and config.
+// Call `Init()` after flag parsing to complete initialization.
 func NewApp(version, commit, date, path string) (*App, error) {
-	created := time.Now()
-
 	config, err := NewConfigFromPath(path)
 	if err != nil {
 		return nil, err
 	}
-
-	meta := NewMeta(version, commit, date)
-	ios := ui.NewIOStreams()
-	logger := newLogger(ios, config)
-
 	app := &App{
-		CreatedAt: created,
-		Config:    config,
-		Logger:    logger,
-		Meta:      meta,
-		IO:        ios,
-		UI:        ui.NewUserInterface(ios),
+		Config: config,
+		Meta:   NewMeta(version, commit, date),
 	}
-
 	return app, nil
 }
 
 // NewTestApp returns the test App singleton.
 // All properties will be configured for testing (mocks, stubs, etc).
 func NewTestApp() *App {
-	created := time.Now()
 	config, _ := NewTestConfig()
-
-	meta := NewMeta("test", "", "0")
-	ios := ui.NewTestIOStreams()
-	logger := newLogger(ios, config)
-
 	app := &App{
-		CreatedAt: created,
-		Config:    config,
-		Logger:    logger,
-		Meta:      meta,
-		IO:        ios,
-		UI:        ui.NewUserInterface(ios),
+		Config: config,
+		Meta:   NewMeta("test", "", time.Now().Format(time.RFC3339)),
+	}
+	app.InitForTest()
+	return app
+}
+
+// Init initializes and configures the app.
+// It must be called once flags have been parsed.
+func (a *App) Init() error {
+	start := time.Now()
+
+	if !a.Config.Color {
+		os.Setenv("NO_COLOR", "1")
 	}
 
-	return app
+	a.IO = ui.NewIOStreams()
+	if !a.Config.Prompt {
+		a.IO.SetInteractive(false)
+	}
+	a.UI = ui.NewUserInterface(a.IO)
+	a.Logger = NewLogger(a.IO, a.Config)
+
+	a.Logger.Debug(
+		"App initialized",
+		"config", a.Config.ConfigPath,
+		"duration", time.Since(start),
+	)
+	return nil
+}
+
+// Init initializes and configures the app for unit testing.
+func (a *App) InitForTest() {
+	a.IO = ui.NewTestIOStreams()
+	a.UI = ui.NewUserInterface(a.IO)
+	a.Logger = NewLogger(a.IO, a.Config)
 }
 
 // Close ensures all app resources have been closed.
@@ -93,32 +100,4 @@ func (a *App) Context() context.Context {
 		a.ctx = context.WithValue(context.Background(), ctxKeyApp, a)
 	}
 	return a.ctx
-}
-
-// SetVerbosity sets the log level for the given value.
-//   - 1: INFO
-//   - 2: DEBUG
-func (a *App) SetVerbosity(value int) {
-	if value > verbosityDebug {
-		value = verbosityDebug
-	}
-	switch value {
-	case verbosityInfo:
-		a.Logger.SetLevel(log.InfoLevel)
-	case verbosityDebug:
-		a.Logger.SetLevel(log.DebugLevel)
-	}
-}
-
-func newLogger(ios *ui.IOStreams, config *Config) *log.Logger {
-	level := config.LogLevel
-	if config.Debug {
-		level = "debug"
-	}
-	return log.NewWithOptions(ios.Err, log.Options{
-		Level:           log.ParseLevel(level),
-		ReportCaller:    true,
-		ReportTimestamp: true,
-		TimeFormat:      time.Kitchen,
-	})
 }

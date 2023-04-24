@@ -25,7 +25,8 @@ func TestNewConfigFromPath(t *testing.T) {
 			want: &Config{
 				ConfigPath: filepath.Join("testdata", "config", "valid.yaml"),
 				Color:      false,
-				Debug:      true,
+				Debug:      false,
+				Prompt:     true,
 				LogLevel:   "warn",
 			},
 			assertion: assert.NoError,
@@ -80,7 +81,7 @@ func TestConfigPath(t *testing.T) {
 			},
 			args: args{
 				args: []string{
-					"--" + ConfigPathLongFlag,
+					"--config",
 					"from_flag.yaml",
 				},
 			},
@@ -95,7 +96,7 @@ func TestConfigPath(t *testing.T) {
 			},
 			args: args{
 				args: []string{
-					"-" + ConfigPathShortFlag,
+					"-c",
 					"from_flag.yaml",
 				},
 			},

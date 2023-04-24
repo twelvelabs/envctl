@@ -1,14 +1,13 @@
 package cmd
 
 import (
-	"time"
-
 	"github.com/spf13/cobra"
 
 	"github.com/twelvelabs/envctl/internal/core"
 )
 
 func NewRootCmd(app *core.App) *cobra.Command {
+	noColor := false
 	noPrompt := false
 	verbosity := 0
 
@@ -18,16 +17,18 @@ func NewRootCmd(app *core.App) *cobra.Command {
 		Version: app.Meta.Version,
 		Args:    cobra.NoArgs,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			app.SetVerbosity(verbosity)
-			if noPrompt {
-				app.IO.SetInteractive(false)
+			if noColor {
+				app.Config.Color = false
 			}
-
-			app.Logger.Debug("App initialized",
-				"config", app.Config.ConfigPath,
-				"duration", time.Since(app.CreatedAt),
-			)
-			return nil
+			if noPrompt {
+				app.Config.Prompt = false
+			}
+			if verbosity == 1 {
+				app.Config.LogLevel = "info"
+			} else if verbosity >= 2 {
+				app.Config.LogLevel = "debug"
+			}
+			return app.Init()
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			name := app.UI.Cyan("envctl")
@@ -38,15 +39,9 @@ func NewRootCmd(app *core.App) *cobra.Command {
 	}
 
 	flags := cmd.PersistentFlags()
-	flags.StringVarP(
-		&app.Config.ConfigPath,
-		core.ConfigPathLongFlag,
-		core.ConfigPathShortFlag,
-		app.Config.ConfigPath,
-		"config path",
-	)
-
+	flags.StringVarP(&app.Config.ConfigPath, "config", "c", app.Config.ConfigPath, "config path")
 	flags.CountVarP(&verbosity, "verbose", "v", "enable verbose logging (increase via -vv)")
+	flags.BoolVar(&noColor, "no-color", noColor, "do not use color output")
 	flags.BoolVar(&noPrompt, "no-prompt", noPrompt, "do not prompt for input")
 
 	// Hide the built in `completion` subcommand
