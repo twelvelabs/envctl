@@ -1,39 +1,30 @@
 #!/usr/bin/env bash
 set -o errexit -o errtrace -o nounset -o pipefail
 
-# Silence cleanup message on `brew install`.
-export HOMEBREW_NO_INSTALL_CLEANUP=1
+ensure-dependency() {
+    local dependency="${1}"
+    local install_command="${2}"
+
+    if command -v "${dependency}" >/dev/null 2>&1; then
+        echo "Found dependency: ${dependency}."
+    else
+        echo "Installing dependency: ${dependency}..."
+        $install_command
+    fi
+}
 
 # Ensure homebrew.
-if command -v "brew" >/dev/null 2>&1; then
-    echo "Found dependency: brew."
-else
-    echo "Setup requires homebrew."
-    echo "Please follow the instructions at https://brew.sh"
-    exit 1
-fi
+ensure-dependency "brew" "echo 'Please follow the instructions at https://brew.sh' && exit 1"
 
 # Ensure jq.
-if command -v "jq" >/dev/null 2>&1; then
-    echo "Found dependency: jq."
-else
-    echo "Setup requires jq."
-    echo "Please run: brew install jq"
-    exit 1
-fi
+ensure-dependency "jq" "brew install --quiet jq"
 
-# Install dependencies
+# Ensure remaining dependencies.
 count=$(jq '. | length' dependencies.json)
 for ((i = 0; i < count; i++)); do
     command=$(jq -r '.['$i'].command' dependencies.json)
     install=$(jq -r '.['$i'].install' dependencies.json)
-
-    if command -v "${command}" >/dev/null 2>&1; then
-        echo "Found dependency: ${command}."
-    else
-        echo "Installing dependency: ${command}..."
-        $install
-    fi
+    ensure-dependency "${command}" "${install}"
 done
 
 if [[ "${CI:-}" != "true" ]]; then
