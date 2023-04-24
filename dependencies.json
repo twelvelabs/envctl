@@ -16,6 +16,10 @@
         "install": "brew install --quiet gitleaks"
     },
     {
+        "command": "gitlint",
+        "install": "brew install --quiet gitlint"
+    },
+    {
         "command": "go",
         "install": "brew install --quiet go"
     },
