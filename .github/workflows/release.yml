@@ -1,0 +1,38 @@
+---
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # pin@v3.5.2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Homebrew
+        uses: homebrew/actions/setup-homebrew@a1377360f443cba4201fe7a591d1c60ba7ddab7a # pin@master
+
+      - name: Set up Go
+        uses: actions/setup-go@4d34df0c2316fe8122ab82dc22947d607c0c91f9 # pin@v4.0.0
+        with:
+          go-version-file: go.mod
+
+      - name: Install dependencies
+        run: make setup
+
+      - name: Release
+        run: make release-publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.GH_PAT }}
