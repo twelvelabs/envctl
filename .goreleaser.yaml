@@ -3,8 +3,9 @@ project_name: envctl
 before:
   hooks:
     - go mod tidy
-    - ./bin/completions.sh
-    - ./bin/manpages.sh
+    - go generate ./...
+    - ./bin/build-completions.sh {{ .ProjectName }}
+    - ./bin/build-manpages.sh {{ .ProjectName }}
 
 builds:
   - env:
@@ -66,6 +67,9 @@ brews:
 checksum:
   name_template: "checksums.txt"
   algorithm: sha256
+
+gomod:
+  proxy: true
 
 snapshot:
   name_template: "{{ incpatch .Version }}-next" # cspell: disable-line

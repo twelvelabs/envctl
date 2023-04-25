@@ -20,7 +20,6 @@ ignorePaths:
   - cspell.yml
   - build/
   - dist/
-  - dependencies.json
   - .golangci.yml
   - go.mod
   - go.sum
@@ -39,6 +38,7 @@ words:
   - envctl
   - gitleaks
   - gitlint
+  - gitsign
   - gocovsh
   - gofmt
   - golangci
@@ -46,12 +46,15 @@ words:
   - gomod
   - goreleaser
   - gpgconf
+  - gpgsign
   - hadolint
   - ifeq
   - ifneq
   - markdownlint
   - nolint
+  - noreply
   - oneof
+  - orlangure
   - pflag
   - rlcp
   - shellcheck

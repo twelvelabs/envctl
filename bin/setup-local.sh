@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -o errexit -o errtrace -o nounset -o pipefail
 
+# Ensure gitlint.
+# Not included in dependencies JSON because it takes a long time to install
+# in CI (since it depends on python@3.x) and we only use it locally.
+ensure-dependency "gitlint" "brew install --quiet gitlint"
+
 # Ensure $USER owns /usr/local/{bin,share}.
 # Allows for running `make install` w/out sudo interruptions.
 if [[ ! -w /usr/local/bin ]]; then

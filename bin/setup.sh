@@ -13,21 +13,29 @@ ensure-dependency() {
     fi
 }
 
-# Ensure homebrew.
 ensure-dependency "brew" "echo 'Please follow the instructions at https://brew.sh' && exit 1"
 
-# Ensure jq.
+ensure-dependency "actionlint" "brew install --quiet actionlint"
+ensure-dependency "gh" "brew install --quiet gh"
+ensure-dependency "git" "brew install --quiet git"
+ensure-dependency "gitleaks" "brew install --quiet gitleaks"
+ensure-dependency "go" "brew install --quiet go"
+ensure-dependency "gocovsh" "brew install --quiet orlangure/tap/gocovsh"
+ensure-dependency "golangci-lint" "brew install --quiet golangci-lint"
+ensure-dependency "goreleaser" "brew install --quiet goreleaser"
+ensure-dependency "gum" "brew install --quiet gum"
 ensure-dependency "jq" "brew install --quiet jq"
+ensure-dependency "npm" "brew install --quiet node"
+ensure-dependency "shellcheck" "brew install --quiet shellcheck"
+ensure-dependency "shfmt" "brew install --quiet shfmt"
+ensure-dependency "stylist" "brew install --quiet twelvelabs/tap/stylist"
+ensure-dependency "cspell" "npm install --global --no-audit --no-fund --quiet cspell"
+ensure-dependency "markdownlint" "npm install --global --no-audit --no-fund --quiet markdownlint-cli"
+ensure-dependency "pin-github-action" "npm install --global --no-audit --no-fund --quiet pin-github-action"
 
-# Ensure remaining dependencies.
-count=$(jq '. | length' dependencies.json)
-for ((i = 0; i < count; i++)); do
-    command=$(jq -r '.['$i'].command' dependencies.json)
-    install=$(jq -r '.['$i'].install' dependencies.json)
-    ensure-dependency "${command}" "${install}"
-done
-
-if [[ "${CI:-}" != "true" ]]; then
-    SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
-    "${SCRIPT_DIR}/setup-local.sh"
+SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
+if [[ "${CI:-}" == "true" ]]; then
+    source "${SCRIPT_DIR}/setup-ci.sh"
+else
+    source "${SCRIPT_DIR}/setup-local.sh"
 fi

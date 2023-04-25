@@ -27,7 +27,7 @@ jobs:
           go-version-file: go.mod
 
       - name: Set up Homebrew
-        uses: homebrew/actions/setup-homebrew@32049fd8f8d4d9557a38f71b1cd9e2e7dcb01a97 # pin@master
+        uses: homebrew/actions/setup-homebrew@a1377360f443cba4201fe7a591d1c60ba7ddab7a # pin@master
 
       - name: Set up dependencies
         run: make setup
