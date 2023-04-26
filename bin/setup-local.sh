@@ -41,19 +41,44 @@ if ! gh repo view --json url &>/dev/null; then
     if gum confirm "Create remote git repo?"; then
         echo "Creating remote repo."
         gh repo create
-        sleep 1
-        echo "Remote repo created: $(gh repo view --json url --jq .url)"
 
-        if [[ "${GH_PAT:-}" == "" ]]; then
-            echo "Enter a GitHub PAT with the 'repo' scope:"
-            echo "  - This is required to publish to the homebrew tap repo in CI."
-            echo "  - To create a new one, go to https://github.com/settings/tokens/new"
-            GH_PAT=$(gum input --password)
+        # Set GH_PAT secret
+        if gum confirm "Add a personal access token to remote git repo?"; then
+            if [[ "${GH_PAT:-}" == "" ]]; then
+                echo "Enter a GitHub PAT:"
+                echo "  - To create a new one, go to https://github.com/settings/tokens/new"
+                GH_PAT=$(gum input --password)
+            fi
+            echo "Setting GH_PAT repo secret."
+            gh secret set GH_PAT --body "$GH_PAT"
         fi
-        echo "Setting GH_PAT repo secret."
-        gh secret set GH_PAT --body "$GH_PAT"
 
+        # Set GH_COMMIT_SIGNING_{KEY,PASS} secrets
+        if gum confirm "Add commit signing key to remote git repo?"; then
+            if [[ "${GH_COMMIT_SIGNING_KEY:-}" == "" ]]; then
+                echo "Select a GPG secret key:"
+                key_id=$(gpg --list-secret-keys --with-colons |
+                    grep '^uid:' |
+                    cut -d':' -f10 |
+                    gum choose)
+                GH_COMMIT_SIGNING_KEY=$(gpg --armor --export-secret-key "$key_id")
+            fi
+            echo "Setting GH_COMMIT_SIGNING_KEY repo secret."
+            gh secret set GH_COMMIT_SIGNING_KEY --body "$GH_COMMIT_SIGNING_KEY"
+
+            if [[ "${GH_COMMIT_SIGNING_PASS:-}" == "" ]]; then
+                echo "Enter the password for '$key_id':"
+                echo "  - Press enter if no password."
+                GH_COMMIT_SIGNING_PASS=$(gum input --password)
+            fi
+            echo "Setting GH_COMMIT_SIGNING_PASS repo secret."
+            gh secret set GH_COMMIT_SIGNING_PASS --body "$GH_COMMIT_SIGNING_PASS"
+        fi
+
+        # Set remote HEAD
         echo "Setting 'remotes/origin/HEAD'."
         git remote set-head origin --auto
+
+        echo "Remote repo created: $(gh repo view --json url --jq .url)"
     fi
 fi

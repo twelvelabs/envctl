@@ -8,6 +8,7 @@ enableFiletypes:
   - dockercompose
   - dotenv
   - editorconfig
+  - github-actions-workflow
   - ini
   - makefile
   - shellscript
@@ -36,9 +37,9 @@ words:
   - devcontainer
   - dotfiles
   - envctl
+  - ghaction
   - gitleaks
   - gitlint
-  - gitsign
   - gocovsh
   - gofmt
   - golangci
@@ -59,6 +60,7 @@ words:
   - rlcp
   - shellcheck
   - shfmt
+  - signingkey
   - sigstore
   - trimpath
   - twelvelabs

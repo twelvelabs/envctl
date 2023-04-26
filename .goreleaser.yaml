@@ -50,7 +50,6 @@ brews:
       owner: twelvelabs
       name: homebrew-tap
       branch: main
-      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
     folder: Formula
     homepage: "https://github.com/twelvelabs/envctl"
     description: "Manage project environment variables"
