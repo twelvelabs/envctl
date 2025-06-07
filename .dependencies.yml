@@ -27,11 +27,6 @@ dependencies:
       description: The Go programming language.
       url: https://github.com/golang/go
 
-    - name: gocovsh
-      install: brew install orlangure/tap/gocovsh
-      description: Tool for exploring Go Coverage reports from the command line.
-      url: https://github.com/orlangure/gocovsh
-
     - name: golangci-lint
       install: brew install golangci-lint
       description: Fast linters runner for Go.
@@ -82,14 +77,14 @@ dependencies:
       description: MarkdownLint command line interface.
       url: https://github.com/igorshubovych/markdownlint-cli
 
-    - name: pin-github-action
-      install: npm install --global --no-audit --no-fund --quiet pin-github-action
-      description: Pin your GitHub actions to a specific hash.
-      url: https://github.com/mheap/pin-github-action
-
   ci: []
 
   local:
+    - name: gocovsh
+      install: brew install orlangure/tap/gocovsh
+      description: Tool for exploring Go Coverage reports from the command line.
+      url: https://github.com/orlangure/gocovsh
+
     - name: gitlint
       install: brew install gitlint
       description: Linting for your git commit messages.
