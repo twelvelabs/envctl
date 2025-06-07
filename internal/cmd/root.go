@@ -44,10 +44,8 @@ func NewRootCmd(app *core.App) *cobra.Command {
 	flags.BoolVar(&noColor, "no-color", noColor, "do not use color output")
 	flags.BoolVar(&noPrompt, "no-prompt", noPrompt, "do not prompt for input")
 
-	// Hide the built in `completion` subcommand
-	cmd.CompletionOptions.HiddenDefaultCmd = true
-
 	cmd.AddCommand(NewManCmd(app))
+	cmd.AddCommand(NewListCmd(app))
 	cmd.AddCommand(NewVersionCmd(app))
 
 	return cmd

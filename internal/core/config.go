@@ -20,6 +20,17 @@ type Config struct {
 	Debug      bool   `yaml:"debug" env:"ENVCTL_DEBUG"`
 	Prompt     bool   `yaml:"prompt" env:"ENVCTL_PROMPT" default:"true"`
 	LogLevel   string `yaml:"log_level" env:"ENVCTL_LOG_LEVEL" default:"warn" validate:"oneof=debug info warn error fatal"` //nolint: lll
+
+	Version      string        `yaml:"version"`
+	Environments []Environment `yaml:"environments"`
+}
+
+func (c *Config) EnvironmentNames() []string {
+	names := []string{}
+	for _, env := range c.Environments {
+		names = append(names, env.Name)
+	}
+	return names
 }
 
 // NewTestConfig returns a new Config for unit tests

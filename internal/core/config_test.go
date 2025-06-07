@@ -126,3 +126,17 @@ func TestConfigPath(t *testing.T) {
 		})
 	}
 }
+
+func TestConfig_EnvironmentNames(t *testing.T) {
+	config, _ := NewTestConfig()
+	config.Environments = []Environment{
+		{Name: "aaa"},
+		{Name: "bbb"},
+		{Name: "ccc"},
+	}
+	assert.Equal(t, []string{
+		"aaa",
+		"bbb",
+		"ccc",
+	}, config.EnvironmentNames())
+}

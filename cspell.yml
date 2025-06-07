@@ -54,6 +54,7 @@ words:
   - ifeq
   - ifneq
   - linuxbrew
+  - mapset
   - markdownlint
   - nolint
   - noreply
