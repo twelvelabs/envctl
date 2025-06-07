@@ -1,57 +1,47 @@
+version: "2"
+
 linters:
-  enable-all: true
+  default: all
   disable:
     - cyclop
-    - dupl
-    - goerr113
+    - depguard
+    - err113
     - exhaustruct
     - forbidigo
     - forcetypeassert
     - funlen
-    - gochecknoinits
-    - gochecknoglobals
     - gocognit
-    - gocyclo
     - godox
-    - gofumpt
-    - gomnd
+    - gochecknoglobals
+    - gochecknoinits
+    - mnd
     - nlreturn
     - paralleltest
+    - revive
+    - tagalign
     - tagliatelle
+    - testifylint
     - testpackage
     - varnamelen
     - wrapcheck
     - wsl
-    # deprecated
-    - exhaustivestruct
-    - deadcode
-    - golint
-    - ifshort
-    - interfacer
-    - maligned
-    - nosnakecase
-    - scopelint
-    - structcheck
-    - varcheck
 
-linters-settings:
-  exhaustive:
-    default-signifies-exhaustive: true
+  exclusions:
+    rules:
+      - path: _test.go
+        linters:
+          - goconst
+      - source: "^\\s*defer\\s+"
+        linters:
+          - errcheck
+          - staticcheck
 
-  gci:
-    sections:
-      - standard # Standard section: captures all standard packages.
-      - default # Default section: contains all imports that could not be matched to another section type.
-      - prefix(github.com/twelvelabs/envctl) # Custom section: groups all imports with the specified Prefix.
+  settings:
+    exhaustive:
+      default-signifies-exhaustive: true
 
-  lll:
-    line-length: 120
-
-  staticcheck:
-    checks:
-      - "all"
-      - "-SA5001"
+    lll:
+      line-length: 120
 
 severity:
-  case-sensitive: false
-  default-severity: error
+  default: error

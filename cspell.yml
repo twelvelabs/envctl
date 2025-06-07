@@ -34,6 +34,7 @@ words:
   - codecov
   - containedctx
   - coverprofile
+  - depctl
   - devcontainer
   - dotfiles
   - envctl
@@ -46,11 +47,13 @@ words:
   - golangci-lint
   - gomod
   - goreleaser
+  - gosec
   - gpgconf
   - gpgsign
   - hadolint
   - ifeq
   - ifneq
+  - linuxbrew
   - markdownlint
   - nolint
   - noreply
@@ -58,9 +61,12 @@ words:
   - orlangure
   - pflag
   - rlcp
+  - SAST
   - shellcheck
   - shfmt
+  - shlex
   - signingkey
   - sigstore
+  - tablewriter
   - trimpath
   - twelvelabs

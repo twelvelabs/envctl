@@ -1,31 +1,26 @@
 # envctl
 
 [![build](https://github.com/twelvelabs/envctl/actions/workflows/build.yml/badge.svg)](https://github.com/twelvelabs/envctl/actions/workflows/build.yml)
-[![codecov](https://codecov.io/gh/twelvelabs/envctl/branch/main/graph/badge.svg?token=jLMxTJcY08)](https://codecov.io/gh/twelvelabs/envctl)
+[![codecov](https://codecov.io/gh/twelvelabs/envctl/branch/main/graph/badge.svg)](https://codecov.io/gh/twelvelabs/envctl)
 
 Manage project environment variables with ease. ✨
 
 ## Installation
 
-### Using [Homebrew](https://brew.sh/)
+Choose one of the following:
 
-```bash
-brew install twelvelabs/tap/envctl
-```
+- Download and manually install the latest [release](https://github.com/twelvelabs/envctl/releases/latest)
+- Install with [Homebrew](https://brew.sh/) 🍺
 
-### Pre-built binary
+  ```bash
+  brew install twelvelabs/tap/envctl
+  ```
 
-Download a pre-built binary from the
-[Releases](https://github.com/twelvelabs/envctl/releases) page.
+- Install from source
 
-### From source
-
-```bash
-# main branch
-go install github.com/twelvelabs/envctl@latest
-# or a specific version tag
-go install github.com/twelvelabs/envctl@v1.2.3
-```
+  ```bash
+  go install github.com/twelvelabs/envctl@latest
+  ```
 
 ## Usage
 

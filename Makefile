@@ -11,7 +11,7 @@ help:
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 	@echo ""
 
-##@ App
+##@ Develop
 
 .PHONY: setup
 setup: ## Setup dependencies
@@ -30,15 +30,18 @@ test: ## Test the app
 	@bin/test.sh
 
 .PHONY: coverage
-coverage: ## Show code coverage
+coverage: ## Show test coverage
 	@bin/coverage.sh
+
+
+##@ Build
 
 .PHONY: build
 build: ## Build the app
 	@bin/build.sh
 
 .PHONY: install
-install: ## Install the app
+install: ## Build and install the app
 	@bin/install.sh
 
 .PHONY: uninstall
@@ -57,5 +60,5 @@ release-tag: ## Create the next release tag
 	@bin/release-tag.sh
 
 .PHONY: release-publish
-release-publish: ## Publish the release tag
+release-publish: ## Build and publish the release
 	@bin/release-publish.sh

@@ -1,3 +1,5 @@
+version: 2
+
 project_name: envctl
 
 before:
@@ -39,18 +41,19 @@ archives:
       - src: build/manpages/*
         dst: manpages
         strip_parent: true
-    format: tar.gz
+    formats:
+      - tar.gz
     format_overrides:
       - goos: windows
-        format: zip
-    rlcp: true
+        formats:
+          - zip
 
 brews:
-  - tap:
+  - repository:
       owner: twelvelabs
       name: homebrew-tap
       branch: main
-    folder: Formula
+    directory: Formula
     homepage: "https://github.com/twelvelabs/envctl"
     description: "Manage project environment variables"
     license: "MIT"
@@ -67,12 +70,6 @@ checksum:
   name_template: "checksums.txt"
   algorithm: sha256
 
-gomod:
-  proxy: true
-
-snapshot:
-  name_template: "{{ incpatch .Version }}-next" # cspell: disable-line
-
 changelog:
   use: github
   sort: asc
@@ -85,3 +82,49 @@ changelog:
       order: 10
     - title: Other work
       order: 99
+
+dockers:
+  - image_templates:
+      - "ghcr.io/twelvelabs/{{ .ProjectName }}:{{ .Tag }}-amd64"
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.name={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
+      - "--platform=linux/amd64"
+    goarch: amd64
+    use: buildx
+
+  - image_templates:
+      - "ghcr.io/twelvelabs/{{ .ProjectName }}:{{ .Tag }}-arm64"
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.name={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
+      - "--platform=linux/arm64"
+    goarch: arm64
+    use: buildx
+
+docker_manifests:
+  - name_template: "ghcr.io/twelvelabs/{{ .ProjectName }}:{{ .Tag }}"
+    image_templates:
+      - "ghcr.io/twelvelabs/{{ .ProjectName }}:{{ .Tag }}-amd64"
+      - "ghcr.io/twelvelabs/{{ .ProjectName }}:{{ .Tag }}-arm64"
+
+  - name_template: "ghcr.io/twelvelabs/{{ .ProjectName }}:latest"
+    image_templates:
+      - "ghcr.io/twelvelabs/{{ .ProjectName }}:{{ .Tag }}-amd64"
+      - "ghcr.io/twelvelabs/{{ .ProjectName }}:{{ .Tag }}-arm64"
+
+gomod:
+  proxy: true
+
+report_sizes: true
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next" # cspell: disable-line
