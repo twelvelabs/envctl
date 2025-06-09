@@ -4,7 +4,7 @@ environments:
   - name: common
     vars:
       EXAMPLE_COMMON: some-common-value
-      # EXAMPLE_USER: env:///USER
+      EXAMPLE_USER: env://USER
       # EXAMPLE_SECRET: secret+google:///projects/my-project-id/secrets/my-secret-id#EXAMPLE_SECRET
 
   - name: local
