@@ -13,7 +13,7 @@ func NewListCmd(app *core.App) *cobra.Command {
 	allEnvNames := app.Config.EnvironmentNames()
 	cmd := &cobra.Command{
 		Use:       "list [NAME]",
-		Short:     "List environment values",
+		Short:     "List environment vars",
 		Args:      cobra.ArbitraryArgs,
 		ValidArgs: allEnvNames,
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -44,7 +44,7 @@ func listEnv(app *core.App, name string) error {
 	app.UI.Out("# %s \n", name)
 	app.UI.Out("---------------------------------------- \n")
 	w := tabwriter.NewWriter(app.IO.Out, 0, 0, 1, ' ', 0)
-	for k, v := range env.Values {
+	for k, v := range env.Vars {
 		_, _ = fmt.Fprintf(w, "%s\t%s \n", k, v)
 	}
 	_ = w.Flush()

@@ -1,4 +1,4 @@
-package core
+package getter
 
 import (
 	"path/filepath"
@@ -8,8 +8,8 @@ import (
 )
 
 func TestDefaultGetter(t *testing.T) {
-	srcPath := filepath.Join("testdata", "config", "valid.yaml")
-	dstPath := filepath.Join(t.TempDir(), "valid.yaml")
+	srcPath := filepath.Join("testdata", "example.txt")
+	dstPath := filepath.Join(t.TempDir(), "example.txt")
 	assert.NoFileExists(t, dstPath)
 	err := DefaultGetter(t.Context(), srcPath, dstPath)
 	assert.NoError(t, err)

@@ -1,4 +1,4 @@
-package core
+package getter
 
 import (
 	"context"

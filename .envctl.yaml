@@ -2,7 +2,7 @@
 version: 1
 environments:
   - name: common
-    values:
+    vars:
       EXAMPLE_COMMON: some-common-value
       # EXAMPLE_USER: env:///USER
       # EXAMPLE_SECRET: secret+google:///projects/my-project-id/secrets/my-secret-id#EXAMPLE_SECRET
@@ -10,11 +10,11 @@ environments:
   - name: local
     extends:
       - common
-    values:
+    vars:
       EXAMPLE_VALUE: some-local-value
 
   - name: staging
     extends:
       - common
-    values:
+    vars:
       EXAMPLE_VALUE: some-staging-value

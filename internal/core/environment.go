@@ -6,6 +6,8 @@ import (
 	"maps"
 
 	mapset "github.com/deckarep/golang-set/v2"
+
+	"github.com/twelvelabs/envctl/internal/getter"
 )
 
 var (
@@ -13,10 +15,12 @@ var (
 	ErrUnknownEnvironment = errors.New("unknown environment")
 )
 
+type EnvVars map[string]string
+
 type Environment struct {
-	Name    string            `yaml:"name"`
-	Extends []string          `yaml:"extends"`
-	Values  map[string]string `yaml:"values"`
+	Name    string   `yaml:"name"`
+	Extends []string `yaml:"extends"`
+	Vars    EnvVars  `yaml:"vars"`
 }
 
 func NewEnvironmentService(config *Config) *EnvironmentService {
@@ -28,14 +32,14 @@ func NewEnvironmentService(config *Config) *EnvironmentService {
 	return &EnvironmentService{
 		config: config,
 		lookup: lookup,
-		getter: DefaultGetter,
+		getter: getter.DefaultGetter,
 	}
 }
 
 type EnvironmentService struct {
 	config *Config
 	lookup map[string]Environment
-	getter Getter
+	getter getter.Getter
 }
 
 func (s *EnvironmentService) Get(id string) (Environment, error) {
@@ -73,9 +77,9 @@ func (s *EnvironmentService) expand(env Environment, seen mapset.Set[string]) (E
 	}
 	seen.Add(env.Name)
 
-	// Collect the values from each ancestor in the `extends` list.
-	// Later entries may overwrite values from previous ones.
-	values := map[string]string{}
+	// Collect the vars from each ancestor in the `extends` list.
+	// Later entries may overwrite vars from previous ones.
+	vars := EnvVars{}
 	for _, id := range env.Extends {
 		ancestor, err := s.get(id)
 		if err != nil {
@@ -86,10 +90,10 @@ func (s *EnvironmentService) expand(env Environment, seen mapset.Set[string]) (E
 		if err != nil {
 			return env, err
 		}
-		maps.Copy(values, ancestor.Values)
+		maps.Copy(vars, ancestor.Vars)
 	}
-	// Finally, overwrite w/ values from the child and update.
-	maps.Copy(values, env.Values)
-	env.Values = values
+	// Finally, overwrite w/ vars from the child and update.
+	maps.Copy(vars, env.Vars)
+	env.Vars = vars
 	return env, nil
 }

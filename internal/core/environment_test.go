@@ -12,7 +12,7 @@ func TestEnvironmentService_Get(t *testing.T) {
 	config.Environments = []Environment{
 		{
 			Name: "common",
-			Values: map[string]string{
+			Vars: EnvVars{
 				"ONE": "common-one",
 				"TWO": "common-two",
 			},
@@ -22,7 +22,7 @@ func TestEnvironmentService_Get(t *testing.T) {
 			Extends: []string{
 				"common",
 			},
-			Values: map[string]string{
+			Vars: EnvVars{
 				"THREE": "local-three",
 			},
 		},
@@ -31,7 +31,7 @@ func TestEnvironmentService_Get(t *testing.T) {
 			Extends: []string{
 				"common",
 			},
-			Values: map[string]string{
+			Vars: EnvVars{
 				"TWO":   "staging-two",
 				"THREE": "staging-three",
 			},
@@ -45,26 +45,26 @@ func TestEnvironmentService_Get(t *testing.T) {
 
 	env, err := envSvc.Get("common")
 	assert.NoError(t, err)
-	assert.Equal(t, map[string]string{
+	assert.Equal(t, EnvVars{
 		"ONE": "common-one",
 		"TWO": "common-two",
-	}, env.Values)
+	}, env.Vars)
 
 	env, err = envSvc.Get("local")
 	assert.NoError(t, err)
-	assert.Equal(t, map[string]string{
+	assert.Equal(t, EnvVars{
 		"ONE":   "common-one",
 		"TWO":   "common-two",
 		"THREE": "local-three",
-	}, env.Values)
+	}, env.Vars)
 
 	env, err = envSvc.Get("staging")
 	assert.NoError(t, err)
-	assert.Equal(t, map[string]string{
+	assert.Equal(t, EnvVars{
 		"ONE":   "common-one",
 		"TWO":   "staging-two",
 		"THREE": "staging-three",
-	}, env.Values)
+	}, env.Vars)
 }
 
 func TestEnvironmentService_Get_WhenCircularDependency(t *testing.T) {
@@ -76,14 +76,14 @@ func TestEnvironmentService_Get_WhenCircularDependency(t *testing.T) {
 			Extends: []string{
 				"bbb",
 			},
-			Values: map[string]string{},
+			Vars: EnvVars{},
 		},
 		{
 			Name: "bbb",
 			Extends: []string{
 				"aaa",
 			},
-			Values: map[string]string{},
+			Vars: EnvVars{},
 		},
 	}
 
@@ -102,7 +102,7 @@ func TestEnvironmentService_Get_WhenUnknownDependency(t *testing.T) {
 			Extends: []string{
 				"nope",
 			},
-			Values: map[string]string{},
+			Vars: EnvVars{},
 		},
 	}
 
