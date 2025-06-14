@@ -44,8 +44,10 @@ func NewRootCmd(app *core.App) *cobra.Command {
 	flags.BoolVar(&noColor, "no-color", noColor, "do not use color output")
 	flags.BoolVar(&noPrompt, "no-prompt", noPrompt, "do not prompt for input")
 
-	cmd.AddCommand(NewManCmd(app))
+	cmd.AddCommand(NewExecCmd(app))
 	cmd.AddCommand(NewListCmd(app))
+
+	cmd.AddCommand(NewManCmd(app))
 	cmd.AddCommand(NewVersionCmd(app))
 
 	return cmd

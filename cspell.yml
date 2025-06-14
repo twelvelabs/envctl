@@ -54,6 +54,7 @@ words:
   - ifeq
   - ifneq
   - linuxbrew
+  - lipgloss
   - mapset
   - markdownlint
   - nolint

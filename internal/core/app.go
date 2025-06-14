@@ -5,6 +5,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/charmbracelet/lipgloss"
+	"github.com/twelvelabs/termite/run"
 	"github.com/twelvelabs/termite/ui"
 )
 
@@ -21,6 +23,8 @@ type App struct {
 	Meta   *Meta
 	IO     *ui.IOStreams
 	UI     *ui.UserInterface
+
+	ExecClient *run.Client
 
 	ctx context.Context //nolint: containedctx
 }
@@ -72,6 +76,9 @@ func (a *App) Init() error {
 	}
 	a.UI = ui.NewUserInterface(a.IO)
 	a.Logger = NewLogger(a.IO, a.Config)
+	a.Logger.SetColorProfile(lipgloss.ColorProfile())
+
+	a.ExecClient = run.NewClient()
 
 	a.Logger.Debug(
 		"App initialized",
@@ -86,6 +93,7 @@ func (a *App) InitForTest() {
 	a.IO = ui.NewTestIOStreams()
 	a.UI = ui.NewUserInterface(a.IO)
 	a.Logger = NewLogger(a.IO, a.Config)
+	a.ExecClient = run.NewClient().WithStubbing()
 }
 
 // Close ensures all app resources have been closed.
