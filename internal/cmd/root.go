@@ -30,11 +30,6 @@ func NewRootCmd(app *core.App) *cobra.Command {
 			}
 			return app.Init()
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			name := app.UI.Cyan("envctl")
-			app.UI.Out("Hello from %s 👋 \n", name)
-			return nil
-		},
 		SilenceUsage: true,
 	}
 
@@ -45,6 +40,7 @@ func NewRootCmd(app *core.App) *cobra.Command {
 	flags.BoolVar(&noPrompt, "no-prompt", noPrompt, "do not prompt for input")
 
 	cmd.AddCommand(NewExecCmd(app))
+	cmd.AddCommand(NewInitCmd(app))
 	cmd.AddCommand(NewListCmd(app))
 
 	cmd.AddCommand(NewManCmd(app))

@@ -1,6 +1,7 @@
 package core
 
 import (
+	_ "embed"
 	"errors"
 	"fmt"
 	"os"
@@ -8,6 +9,9 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/twelvelabs/termite/conf"
 )
+
+//go:embed config.default.yaml
+var ConfigContentDefault []byte
 
 const (
 	ConfigPathDefault = ".envctl.yaml"
