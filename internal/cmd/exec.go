@@ -35,6 +35,9 @@ func NewExecCmd(app *core.App) *cobra.Command {
 			}
 		},
 	}
+
+	cmd.Flags().BoolVar(&app.Config.DotEnv, "dotenv", app.Config.DotEnv, "create a temporary dotenv file")
+
 	return cmd
 }
 
@@ -49,6 +52,17 @@ func execEnv(app *core.App, name string, args []string) error {
 	vars, err := resSvc.ResolveVars(env.Vars)
 	if err != nil {
 		return err
+	}
+
+	if app.Config.DotEnv {
+		dotEnvSvc := core.NewDotEnvService("")
+
+		var cleanup core.CleanupFunc
+		vars, args, cleanup, err = dotEnvSvc.Create(vars, args)
+		if err != nil {
+			return err
+		}
+		defer cleanup()
 	}
 
 	execSvc := core.NewExecService(app.Config, app.ExecClient)

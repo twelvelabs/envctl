@@ -18,6 +18,7 @@ type Config struct {
 	ConfigPath string
 	Color      bool   `yaml:"color" env:"ENVCTL_COLOR" default:"true"`
 	Debug      bool   `yaml:"debug" env:"ENVCTL_DEBUG"`
+	DotEnv     bool   `yaml:"dotenv" env:"ENVCTL_DOTENV" default:"false"`
 	Prompt     bool   `yaml:"prompt" env:"ENVCTL_PROMPT" default:"true"`
 	LogLevel   string `yaml:"log_level" env:"ENVCTL_LOG_LEVEL" default:"warn" validate:"oneof=debug info warn error fatal"` //nolint: lll
 

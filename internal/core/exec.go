@@ -2,7 +2,6 @@ package core
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -30,12 +29,7 @@ func (s *ExecService) Run(ctx context.Context, args []string, vars EnvVars) (*ru
 	}
 
 	cmd := s.client.CommandContext(ctx, executable, args[1:]...)
-	env := []string{}
-	for k, v := range vars {
-		env = append(env, fmt.Sprintf("%s=%s", k, v))
-	}
-
-	cmd.Env = env
+	cmd.Env = vars.Environ()
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

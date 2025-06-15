@@ -12,6 +12,12 @@ environments:
       - common
     vars:
       EXAMPLE_VALUE: some-local-value
+      AAA: "something"
+      BBB: "something with spaces"
+      CCC: 'something "quoted"'
+      DDD: |
+        something
+        multiline
 
   - name: staging
     extends:

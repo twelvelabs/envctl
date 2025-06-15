@@ -1,0 +1,6 @@
+services:
+  app:
+    image: "alpine:3.22.0"
+    command:
+      - env
+    env_file: "${ENVCTL_DOTENV_PATH:-}"

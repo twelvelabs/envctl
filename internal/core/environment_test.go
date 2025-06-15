@@ -4,7 +4,23 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
+
+func TestEnvVars_Environ(t *testing.T) {
+	vars := EnvVars{
+		"AAA": "something",
+		"BBB": "something with spaces",
+		"CCC": "something \"quoted\"",
+		"DDD": "something\nmultiline",
+	}
+	require.Equal(t, []string{
+		"AAA=something",
+		"BBB=something with spaces",
+		"CCC=something \"quoted\"",
+		"DDD=something\nmultiline",
+	}, vars.Environ())
+}
 
 func TestEnvironmentService_Get(t *testing.T) {
 	config, err := NewTestConfig()

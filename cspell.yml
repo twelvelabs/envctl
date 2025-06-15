@@ -36,12 +36,15 @@ words:
   - coverprofile
   - depctl
   - devcontainer
+  - dotenv
   - dotfiles
   - envctl
+  - fsutil
   - ghaction
   - gitleaks
   - gitlint
   - gocovsh
+  - godotenv
   - gofmt
   - golangci
   - golangci-lint

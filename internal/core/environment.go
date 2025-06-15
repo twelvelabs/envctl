@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"maps"
+	"sort"
 
 	mapset "github.com/deckarep/golang-set/v2"
 
@@ -16,6 +17,18 @@ var (
 )
 
 type EnvVars map[string]string
+
+// Environ returns a list of key value pairs in the form
+// of "key=value" (similar to [os.Environ]).
+func (e EnvVars) Environ() []string {
+	pairs := []string{}
+	for k, v := range e {
+		pairs = append(pairs, fmt.Sprintf("%s=%s", k, v))
+	}
+	// Ensure stable sort order for tests.
+	sort.Strings(pairs)
+	return pairs
+}
 
 type Environment struct {
 	Name    string   `yaml:"name"`
