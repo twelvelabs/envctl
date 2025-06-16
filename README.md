@@ -9,14 +9,16 @@ Manage project environment variables with ease. ✨
 
 Choose one of the following:
 
-- Download and manually install the latest [release](https://github.com/twelvelabs/envctl/releases/latest)
+- Download and install the latest
+  [release](https://github.com/twelvelabs/envctl/releases/latest) :octocat:
+
 - Install with [Homebrew](https://brew.sh/) 🍺
 
   ```bash
   brew install twelvelabs/tap/envctl
   ```
 
-- Install from source
+- Install from source 💻
 
   ```bash
   go install github.com/twelvelabs/envctl@latest
@@ -24,7 +26,34 @@ Choose one of the following:
 
 ## Usage
 
-TODO
+First, initialize your project:
+
+```bash
+envctl init
+```
+
+Which generates an `.envctl.yaml` file:
+
+```yaml
+environments:
+  - name: local
+    vars:
+      EXAMPLE: "hello local"
+
+  - name: prod
+    vars:
+      EXAMPLE: "hello prod"
+```
+
+Then exec a command in one of the named environments:
+
+```shell
+envctl exec local -- sh -c 'echo $EXAMPLE'
+# => hello local
+
+envctl exec prod -- sh -c 'echo $EXAMPLE'
+# => hello prod
+```
 
 ## Development
 

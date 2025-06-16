@@ -1,4 +1,3 @@
----
 version: 1
 environments:
   - name: common
@@ -11,10 +10,16 @@ environments:
     extends:
       - common
     vars:
-      EXAMPLE_VALUE: some-local-value
+      EXAMPLE: hello local
 
   - name: staging
     extends:
       - common
     vars:
-      EXAMPLE_VALUE: some-staging-value
+      EXAMPLE: hello staging
+
+  - name: prod
+    extends:
+      - common
+    vars:
+      EXAMPLE: hello prod
