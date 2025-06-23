@@ -10,10 +10,10 @@ import (
 func TestNewApp(t *testing.T) {
 	path := filepath.Join("testdata", "config", "valid.yaml")
 	app, err := NewApp("", "", "", path)
+	assert.NoError(t, err)
 	defer app.Close()
 
 	assert.NotNil(t, app)
-	assert.NoError(t, err)
 	assert.Equal(t, path, app.Config.ConfigPath)
 }
 
@@ -43,6 +43,7 @@ func TestApp_Init(t *testing.T) {
 	path := filepath.Join("testdata", "config", "valid.yaml")
 	app, err := NewApp("", "", "", path)
 	assert.NoError(t, err)
+	defer app.Close()
 
 	assert.Nil(t, app.IO)
 	assert.Nil(t, app.UI)
@@ -60,6 +61,7 @@ func TestApp_Init_WhenNoColor(t *testing.T) {
 	path := filepath.Join("testdata", "config", "valid.yaml")
 	app, err := NewApp("", "", "", path)
 	assert.NoError(t, err)
+	defer app.Close()
 
 	err = app.Init()
 	assert.NoError(t, err)
@@ -76,6 +78,7 @@ func TestApp_Init_WhenNoPrompt(t *testing.T) {
 	path := filepath.Join("testdata", "config", "valid.yaml")
 	app, err := NewApp("", "", "", path)
 	assert.NoError(t, err)
+	defer app.Close()
 
 	err = app.Init()
 	assert.NoError(t, err)

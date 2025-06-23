@@ -8,6 +8,8 @@ import (
 	"syscall"
 
 	"github.com/twelvelabs/termite/run"
+
+	"github.com/twelvelabs/envctl/internal/models"
 )
 
 func NewExecService(config *Config, client *run.Client) *ExecService {
@@ -22,7 +24,7 @@ type ExecService struct {
 	client *run.Client
 }
 
-func (s *ExecService) Run(ctx context.Context, args []string, vars EnvVars) (*run.Cmd, error) {
+func (s *ExecService) Run(ctx context.Context, args []string, vars models.Vars) (*run.Cmd, error) {
 	executable, err := exec.LookPath(args[0])
 	if err != nil {
 		return nil, err

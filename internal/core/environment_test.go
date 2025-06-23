@@ -4,23 +4,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-)
 
-func TestEnvVars_Environ(t *testing.T) {
-	vars := EnvVars{
-		"AAA": "something",
-		"BBB": "something with spaces",
-		"CCC": "something \"quoted\"",
-		"DDD": "something\nmultiline",
-	}
-	require.Equal(t, []string{
-		"AAA=something",
-		"BBB=something with spaces",
-		"CCC=something \"quoted\"",
-		"DDD=something\nmultiline",
-	}, vars.Environ())
-}
+	"github.com/twelvelabs/envctl/internal/models"
+)
 
 func TestEnvironmentService_Get(t *testing.T) {
 	config, err := NewTestConfig()
@@ -28,7 +14,7 @@ func TestEnvironmentService_Get(t *testing.T) {
 	config.Environments = []Environment{
 		{
 			Name: "common",
-			Vars: EnvVars{
+			Vars: models.Vars{
 				"ONE": "common-one",
 				"TWO": "common-two",
 			},
@@ -38,7 +24,7 @@ func TestEnvironmentService_Get(t *testing.T) {
 			Extends: []string{
 				"common",
 			},
-			Vars: EnvVars{
+			Vars: models.Vars{
 				"THREE": "local-three",
 			},
 		},
@@ -47,7 +33,7 @@ func TestEnvironmentService_Get(t *testing.T) {
 			Extends: []string{
 				"common",
 			},
-			Vars: EnvVars{
+			Vars: models.Vars{
 				"TWO":   "staging-two",
 				"THREE": "staging-three",
 			},
@@ -61,14 +47,14 @@ func TestEnvironmentService_Get(t *testing.T) {
 
 	env, err := envSvc.Get("common")
 	assert.NoError(t, err)
-	assert.Equal(t, EnvVars{
+	assert.Equal(t, models.Vars{
 		"ONE": "common-one",
 		"TWO": "common-two",
 	}, env.Vars)
 
 	env, err = envSvc.Get("local")
 	assert.NoError(t, err)
-	assert.Equal(t, EnvVars{
+	assert.Equal(t, models.Vars{
 		"ONE":   "common-one",
 		"TWO":   "common-two",
 		"THREE": "local-three",
@@ -76,7 +62,7 @@ func TestEnvironmentService_Get(t *testing.T) {
 
 	env, err = envSvc.Get("staging")
 	assert.NoError(t, err)
-	assert.Equal(t, EnvVars{
+	assert.Equal(t, models.Vars{
 		"ONE":   "common-one",
 		"TWO":   "staging-two",
 		"THREE": "staging-three",
@@ -92,14 +78,14 @@ func TestEnvironmentService_Get_WhenCircularDependency(t *testing.T) {
 			Extends: []string{
 				"bbb",
 			},
-			Vars: EnvVars{},
+			Vars: models.Vars{},
 		},
 		{
 			Name: "bbb",
 			Extends: []string{
 				"aaa",
 			},
-			Vars: EnvVars{},
+			Vars: models.Vars{},
 		},
 	}
 
@@ -118,7 +104,7 @@ func TestEnvironmentService_Get_WhenUnknownDependency(t *testing.T) {
 			Extends: []string{
 				"nope",
 			},
-			Vars: EnvVars{},
+			Vars: models.Vars{},
 		},
 	}
 

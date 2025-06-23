@@ -34,20 +34,18 @@ func NewListCmd(app *core.App) *cobra.Command {
 	return cmd
 }
 
-func listEnv(app *core.App, name string) error {
-	envSvc := core.NewEnvironmentService(app.Config)
-	env, err := envSvc.Get(name)
+func listEnv(app *core.App, envName string) error {
+	env, err := app.Environments.Get(envName)
 	if err != nil {
 		return err
 	}
 
-	resSvc := core.NewResolverService(app.Config, core.Resolvers)
-	vars, err := resSvc.ResolveVars(env.Vars)
+	vars, err := app.Stores.MultiGet(app.Context(), env.Vars)
 	if err != nil {
 		return err
 	}
 
-	app.UI.Out("# %s \n", name)
+	app.UI.Out("# %s \n", envName)
 	app.UI.Out("---------------------------------------- \n")
 	w := tabwriter.NewWriter(app.IO.Out, 0, 0, 1, ' ', 0)
 	for k, v := range vars {

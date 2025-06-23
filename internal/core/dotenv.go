@@ -8,6 +8,8 @@ import (
 	"github.com/joho/godotenv"
 
 	"github.com/twelvelabs/termite/fsutil"
+
+	"github.com/twelvelabs/envctl/internal/models"
 )
 
 var (
@@ -29,7 +31,7 @@ type DotEnvService struct {
 	path string
 }
 
-func (s *DotEnvService) Create(vars EnvVars, args []string) (EnvVars, []string, CleanupFunc, error) {
+func (s *DotEnvService) Create(vars models.Vars, args []string) (models.Vars, []string, CleanupFunc, error) { //nolint:lll
 	// Ensure we have a dir to write dotenv files to.
 	if err := fsutil.EnsureDirWritable(s.path); err != nil {
 		return vars, args, nil, err
@@ -44,14 +46,14 @@ func (s *DotEnvService) Create(vars EnvVars, args []string) (EnvVars, []string, 
 
 	// Set the path in both vars and args.
 	dotEnvPath := f.Name()
-	vars[DotEnvPathVar] = dotEnvPath
+	vars[DotEnvPathVar] = models.Value(dotEnvPath)
 	for idx, arg := range args {
 		args[idx] = strings.ReplaceAll(arg, DotEnvPathVar, dotEnvPath)
 	}
 
 	// Write `vars` to the dotenv file.
 	// Using godotenv because it knows how to properly escape values.
-	err = godotenv.Write(vars, dotEnvPath)
+	err = godotenv.Write(vars.Map(), dotEnvPath)
 	if err != nil {
 		return vars, args, nil, err
 	}

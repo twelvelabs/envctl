@@ -19,7 +19,7 @@ func NewExecCmd(app *core.App) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			switch len(args) {
 			case 0:
-				return errors.New("missing env name")
+				return errors.New("missing environment name")
 			case 1:
 				return errors.New("missing command")
 			default:
@@ -41,15 +41,14 @@ func NewExecCmd(app *core.App) *cobra.Command {
 	return cmd
 }
 
-func execEnv(app *core.App, name string, args []string) error {
-	envSvc := core.NewEnvironmentService(app.Config)
-	env, err := envSvc.Get(name)
+func execEnv(app *core.App, envName string, args []string) error {
+	ctx := app.Context()
+	env, err := app.Environments.Get(envName)
 	if err != nil {
 		return err
 	}
 
-	resSvc := core.NewResolverService(app.Config, core.Resolvers)
-	vars, err := resSvc.ResolveVars(env.Vars)
+	vars, err := app.Stores.MultiGet(ctx, env.Vars)
 	if err != nil {
 		return err
 	}
@@ -66,6 +65,6 @@ func execEnv(app *core.App, name string, args []string) error {
 	}
 
 	execSvc := core.NewExecService(app.Config, app.ExecClient)
-	_, err = execSvc.Run(app.Context(), args, vars)
+	_, err = execSvc.Run(ctx, args, vars)
 	return err
 }

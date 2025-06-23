@@ -5,6 +5,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/twelvelabs/termite/run"
+
+	"github.com/twelvelabs/envctl/internal/models"
 )
 
 func TestExecService(t *testing.T) {
@@ -17,7 +19,7 @@ func TestExecService(t *testing.T) {
 	)
 
 	svc := NewExecService(app.Config, app.ExecClient)
-	cmd, err := svc.Run(t.Context(), []string{"echo"}, EnvVars{"FOO": "bar"})
+	cmd, err := svc.Run(t.Context(), []string{"echo"}, models.Vars{"FOO": "bar"})
 	require.NoError(t, err)
 	require.Equal(t, []string{"FOO=bar"}, cmd.Env)
 }

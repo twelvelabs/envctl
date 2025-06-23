@@ -15,11 +15,15 @@
         "uncoveredGutterStyle": "blockred"
     },
     "go.diagnostic.vulncheck": "Imports",
+    "go.disableConcurrentTests": true,
     "go.generateTestsFlags": [
         "--template=testify"
     ],
     "go.lintOnSave": "package",
-    "go.lintTool": "golangci-lint",
+    "go.lintTool": "golangci-lint-v2",
+    "go.lintFlags": [
+        "--path-mode=abs",
+    ],
     "go.useLanguageServer": true,
     "gopls": {
         "local": "github.com/twelvelabs/envctl",

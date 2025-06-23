@@ -8,6 +8,8 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/twelvelabs/termite/run"
 	"github.com/twelvelabs/termite/ui"
+
+	"github.com/twelvelabs/envctl/internal/stores"
 )
 
 type ctxKey string
@@ -24,9 +26,11 @@ type App struct {
 	IO     *ui.IOStreams
 	UI     *ui.UserInterface
 
-	ExecClient *run.Client
+	ExecClient   *run.Client
+	Stores       *stores.StoreService
+	Environments *EnvironmentService
 
-	ctx context.Context //nolint: containedctx
+	ctx context.Context
 }
 
 // AppForContext returns the app singleton stored in the given context.
@@ -79,6 +83,8 @@ func (a *App) Init() error {
 	a.Logger.SetColorProfile(lipgloss.ColorProfile())
 
 	a.ExecClient = run.NewClient()
+	a.Environments = NewEnvironmentService(a.Config)
+	a.Stores = stores.NewStoreService(a.Context(), stores.DefaultStoreFactories)
 
 	a.Logger.Debug(
 		"App initialized",
@@ -94,11 +100,17 @@ func (a *App) InitForTest() {
 	a.UI = ui.NewUserInterface(a.IO)
 	a.Logger = NewLogger(a.IO, a.Config)
 	a.ExecClient = run.NewClient().WithStubbing()
+	a.Environments = NewEnvironmentService(a.Config)
+	a.Stores = stores.NewStoreService(a.Context(), stores.TestStoreFactories)
 }
 
 // Close ensures all app resources have been closed.
 func (a *App) Close() error {
-	// Add any db/file closing here if needed.
+	if a.Stores != nil {
+		if err := a.Stores.Close(); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 

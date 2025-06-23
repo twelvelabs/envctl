@@ -7,6 +7,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/twelvelabs/envctl/internal/models"
 )
 
 func TestDotEnvService(t *testing.T) {
@@ -14,7 +16,7 @@ func TestDotEnvService(t *testing.T) {
 	svc := NewDotEnvService(dir)
 
 	vars, args, cleanup, err := svc.Create(
-		EnvVars{
+		models.Vars{
 			"AAA": "something",
 			"BBB": "something with spaces",
 			"CCC": "something \"quoted\"",
@@ -26,12 +28,12 @@ func TestDotEnvService(t *testing.T) {
 
 	// dotenv file path should be added to `vars` and `args`.
 	dotenvPath := vars[DotEnvPathVar]
-	require.NotEmpty(t, dotenvPath)
-	require.FileExists(t, dotenvPath)
+	require.NotEmpty(t, dotenvPath.String())
+	require.FileExists(t, dotenvPath.String())
 	require.Equal(t, fmt.Sprintf("--file='%s'", dotenvPath), args[1])
 
 	// dotenv file content should be properly escaped.
-	buf, err := os.ReadFile(dotenvPath) //nolint:gosec
+	buf, err := os.ReadFile(dotenvPath.String())
 	require.NoError(t, err)
 	lines := strings.Split(string(buf), "\n")
 	require.Equal(t, []string{
@@ -45,7 +47,7 @@ func TestDotEnvService(t *testing.T) {
 	// Cleanup function should delete the dotenv file.
 	err = cleanup()
 	require.NoError(t, err)
-	require.NoFileExists(t, dotenvPath)
+	require.NoFileExists(t, dotenvPath.String())
 }
 
 func TestDotEnvService_WhenEmptyArg(t *testing.T) {

@@ -4,11 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"maps"
-	"sort"
 
 	mapset "github.com/deckarep/golang-set/v2"
 
 	"github.com/twelvelabs/envctl/internal/getter"
+	"github.com/twelvelabs/envctl/internal/models"
 )
 
 var (
@@ -16,24 +16,10 @@ var (
 	ErrUnknownEnvironment = errors.New("unknown environment")
 )
 
-type EnvVars map[string]string
-
-// Environ returns a list of key value pairs in the form
-// of "key=value" (similar to [os.Environ]).
-func (e EnvVars) Environ() []string {
-	pairs := []string{}
-	for k, v := range e {
-		pairs = append(pairs, fmt.Sprintf("%s=%s", k, v))
-	}
-	// Ensure stable sort order for tests.
-	sort.Strings(pairs)
-	return pairs
-}
-
 type Environment struct {
-	Name    string   `yaml:"name"`
-	Extends []string `yaml:"extends"`
-	Vars    EnvVars  `yaml:"vars"`
+	Name    string      `yaml:"name"`
+	Extends []string    `yaml:"extends"`
+	Vars    models.Vars `yaml:"vars"`
 }
 
 func NewEnvironmentService(config *Config) *EnvironmentService {
@@ -92,7 +78,7 @@ func (s *EnvironmentService) expand(env Environment, seen mapset.Set[string]) (E
 
 	// Collect the vars from each ancestor in the `extends` list.
 	// Later entries may overwrite vars from previous ones.
-	vars := EnvVars{}
+	vars := models.Vars{}
 	for _, id := range env.Extends {
 		ancestor, err := s.get(id)
 		if err != nil {
