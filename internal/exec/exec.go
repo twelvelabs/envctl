@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"slices"
 	"syscall"
 
 	"github.com/twelvelabs/termite/run"
@@ -29,7 +30,7 @@ func (s *ExecService) Run(ctx context.Context, args []string, vars models.Vars) 
 	}
 
 	cmd := s.client.CommandContext(ctx, executable, args[1:]...)
-	cmd.Env = vars.Environ()
+	cmd.Env = slices.Concat(os.Environ(), vars.Environ())
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

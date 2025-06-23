@@ -10,16 +10,18 @@ import (
 )
 
 func TestExecService(t *testing.T) {
-	client := run.NewClient().WithStubbing()
-	// defer client.VerifyStubs(t)
+	client := run.NewClient()
 
-	client.RegisterStub(
-		run.MatchRegexp(`echo`),
-		run.StringResponse(""),
-	)
+	t.Setenv("FROM_PARENT", "parent")
+	t.Setenv("FOR_CHILD", "parent")
 
 	svc := NewExecService(client)
-	cmd, err := svc.Run(t.Context(), []string{"echo"}, models.Vars{"FOO": "bar"})
+	cmd, err := svc.Run(t.Context(), []string{"echo"}, models.Vars{
+		"FOR_CHILD": "child",
+	})
 	require.NoError(t, err)
-	require.Equal(t, []string{"FOO=bar"}, cmd.Env)
+
+	// Subprocess should have received both vars.
+	require.Contains(t, cmd.Env, "FROM_PARENT=parent")
+	require.Contains(t, cmd.Env, "FOR_CHILD=child")
 }
