@@ -52,7 +52,8 @@ func (s *GSMStore) Get(ctx context.Context, value models.Value) (string, error) 
 		return "", rpcErr(err, names.Version)
 	}
 
-	return string(resp.GetPayload().GetData()), nil
+	plaintext := string(resp.GetPayload().GetData())
+	return models.ReadPlaintext(plaintext, value.URL())
 }
 
 // Set updates the plaintext value for the secret at the given URL.
@@ -62,12 +63,14 @@ func (s *GSMStore) Set(ctx context.Context, value models.Value, updated string) 
 		return err
 	}
 
+	// Ensure the secret exists.
 	_, err = s.getOrCreateSecret(ctx, names.Secret, names.Parent)
 	if err != nil {
 		return err
 	}
 
-	_, err = s.client.AccessSecretVersion(ctx, &secretmanagerpb.AccessSecretVersionRequest{
+	// Get the current secret version.
+	resp, err := s.client.AccessSecretVersion(ctx, &secretmanagerpb.AccessSecretVersionRequest{
 		Name: names.Version,
 	})
 	err = rpcErr(err, names.Version)
@@ -75,12 +78,18 @@ func (s *GSMStore) Set(ctx context.Context, value models.Value, updated string) 
 		return err
 	}
 
-	// TODO: handle updating JSON secrets.
+	// Update the plaintext value.
+	plaintext := string(resp.GetPayload().GetData())
+	plaintext, err = models.WritePlaintext(plaintext, value.URL(), updated)
+	if err != nil {
+		return err
+	}
 
+	// Publish a new secret version w/ the updated plaintext.
 	_, err = s.client.AddSecretVersion(ctx, &secretmanagerpb.AddSecretVersionRequest{
 		Parent: names.Secret,
 		Payload: &secretmanagerpb.SecretPayload{
-			Data: []byte(updated),
+			Data: []byte(plaintext),
 		},
 	})
 	err = rpcErr(err, names.Secret)

@@ -44,6 +44,7 @@ words:
   - ghaction
   - gitleaks
   - gitlint
+  - gjson
   - gocovsh
   - godotenv
   - gofmt
@@ -75,6 +76,7 @@ words:
   - shlex
   - signingkey
   - sigstore
+  - sjson
   - tablewriter
   - trimpath
   - twelvelabs
