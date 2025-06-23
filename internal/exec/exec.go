@@ -1,4 +1,4 @@
-package core
+package exec
 
 import (
 	"context"
@@ -12,15 +12,13 @@ import (
 	"github.com/twelvelabs/envctl/internal/models"
 )
 
-func NewExecService(config *Config, client *run.Client) *ExecService {
+func NewExecService(client *run.Client) *ExecService {
 	return &ExecService{
-		config: config,
 		client: client,
 	}
 }
 
 type ExecService struct {
-	config *Config
 	client *run.Client
 }
 

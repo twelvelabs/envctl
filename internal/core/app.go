@@ -9,6 +9,7 @@ import (
 	"github.com/twelvelabs/termite/run"
 	"github.com/twelvelabs/termite/ui"
 
+	"github.com/twelvelabs/envctl/internal/exec"
 	"github.com/twelvelabs/envctl/internal/stores"
 )
 
@@ -26,9 +27,9 @@ type App struct {
 	IO     *ui.IOStreams
 	UI     *ui.UserInterface
 
-	ExecClient   *run.Client
 	Stores       *stores.StoreService
 	Environments *EnvironmentService
+	Exec         *exec.ExecService
 
 	ctx context.Context
 }
@@ -82,7 +83,7 @@ func (a *App) Init() error {
 	a.Logger = NewLogger(a.IO, a.Config)
 	a.Logger.SetColorProfile(lipgloss.ColorProfile())
 
-	a.ExecClient = run.NewClient()
+	a.Exec = exec.NewExecService(run.NewClient())
 	a.Environments = NewEnvironmentService(a.Config)
 	a.Stores = stores.NewStoreService(a.Context(), stores.DefaultStoreFactories)
 
@@ -99,7 +100,7 @@ func (a *App) InitForTest() {
 	a.IO = ui.NewTestIOStreams()
 	a.UI = ui.NewUserInterface(a.IO)
 	a.Logger = NewLogger(a.IO, a.Config)
-	a.ExecClient = run.NewClient().WithStubbing()
+	a.Exec = exec.NewExecService(run.NewClient().WithStubbing())
 	a.Environments = NewEnvironmentService(a.Config)
 	a.Stores = stores.NewStoreService(a.Context(), stores.TestStoreFactories)
 }

@@ -64,7 +64,6 @@ func execEnv(app *core.App, envName string, args []string) error {
 		defer cleanup()
 	}
 
-	execSvc := core.NewExecService(app.Config, app.ExecClient)
-	_, err = execSvc.Run(ctx, args, vars)
+	_, err = app.Exec.Run(ctx, args, vars)
 	return err
 }

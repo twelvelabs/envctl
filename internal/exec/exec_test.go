@@ -1,4 +1,4 @@
-package core
+package exec
 
 import (
 	"testing"
@@ -10,15 +10,15 @@ import (
 )
 
 func TestExecService(t *testing.T) {
-	app := NewTestApp()
-	// defer app.ExecClient.VerifyStubs(t)
+	client := run.NewClient().WithStubbing()
+	// defer client.VerifyStubs(t)
 
-	app.ExecClient.RegisterStub(
+	client.RegisterStub(
 		run.MatchRegexp(`echo`),
 		run.StringResponse(""),
 	)
 
-	svc := NewExecService(app.Config, app.ExecClient)
+	svc := NewExecService(client)
 	cmd, err := svc.Run(t.Context(), []string{"echo"}, models.Vars{"FOO": "bar"})
 	require.NoError(t, err)
 	require.Equal(t, []string{"FOO=bar"}, cmd.Env)
