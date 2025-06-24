@@ -25,12 +25,14 @@ var (
 // in Google Secret Manager.
 type GSMStore struct {
 	client GSMClient
+	cache  map[string]string
 }
 
 // NewGSMStore returns a new [GSMStore].
 func NewGSMStore(client GSMClient) *GSMStore {
 	return &GSMStore{
 		client: client,
+		cache:  map[string]string{},
 	}
 }
 
@@ -45,14 +47,11 @@ func (s *GSMStore) Get(ctx context.Context, value models.Value) (string, error) 
 		return "", err
 	}
 
-	resp, err := s.client.AccessSecretVersion(ctx, &secretmanagerpb.AccessSecretVersionRequest{
-		Name: names.Version,
-	})
+	plaintext, err := s.accessSecretVersion(ctx, names.Version)
 	if err != nil {
-		return "", rpcErr(err, names.Version)
+		return "", err
 	}
 
-	plaintext := string(resp.GetPayload().GetData())
 	return models.ReadPlaintext(plaintext, value.URL())
 }
 
@@ -70,29 +69,19 @@ func (s *GSMStore) Set(ctx context.Context, value models.Value, updated string) 
 	}
 
 	// Get the current secret version.
-	resp, err := s.client.AccessSecretVersion(ctx, &secretmanagerpb.AccessSecretVersionRequest{
-		Name: names.Version,
-	})
-	err = rpcErr(err, names.Version)
-	if err != nil && !errors.Is(err, ErrNotFound) {
+	plaintext, err := s.accessSecretVersion(ctx, names.Version)
+	if err != nil {
 		return err
 	}
 
 	// Update the plaintext value.
-	plaintext := string(resp.GetPayload().GetData())
 	plaintext, err = models.WritePlaintext(plaintext, value.URL(), updated)
 	if err != nil {
 		return err
 	}
 
 	// Publish a new secret version w/ the updated plaintext.
-	_, err = s.client.AddSecretVersion(ctx, &secretmanagerpb.AddSecretVersionRequest{
-		Parent: names.Secret,
-		Payload: &secretmanagerpb.SecretPayload{
-			Data: []byte(plaintext),
-		},
-	})
-	err = rpcErr(err, names.Secret)
+	err = s.updateSecretVersion(ctx, names.Secret, names.Version, plaintext)
 	if err != nil {
 		return err
 	}
@@ -194,6 +183,37 @@ func (s *GSMStore) getOrCreateSecret(
 	})
 
 	return secret, rpcErr(err, parent)
+}
+
+func (s *GSMStore) accessSecretVersion(ctx context.Context, versionName string) (string, error) {
+	plaintext, found := s.cache[versionName]
+	if !found {
+		resp, err := s.client.AccessSecretVersion(ctx, &secretmanagerpb.AccessSecretVersionRequest{
+			Name: versionName,
+		})
+		if err != nil {
+			return "", rpcErr(err, versionName)
+		}
+		plaintext = string(resp.GetPayload().GetData())
+		s.cache[versionName] = plaintext
+	}
+	return plaintext, nil
+}
+
+func (s *GSMStore) updateSecretVersion(ctx context.Context, secretName, versionName, plaintext string) error {
+	_, err := s.client.AddSecretVersion(ctx, &secretmanagerpb.AddSecretVersionRequest{
+		Parent: secretName,
+		Payload: &secretmanagerpb.SecretPayload{
+			Data: []byte(plaintext),
+		},
+	})
+	err = rpcErr(err, secretName)
+	if err != nil {
+		return err
+	}
+
+	delete(s.cache, versionName)
+	return nil
 }
 
 // Helper to pretty up the default gRPC 404 errors
