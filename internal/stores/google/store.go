@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"regexp"
 	"strings"
 
 	secretmanagerpb "cloud.google.com/go/secretmanager/apiv1/secretmanagerpb"
@@ -14,11 +15,11 @@ import (
 )
 
 var (
-	shortFormURL = "secret+google:///projects/*/secrets/*/versions/*"
-	longFormURL  = "secret+google:///projects/*/locations/*/secrets/*/versions/*"
+	// https://regex101.com/r/SXjWpH/2
+	secretPathRe = regexp.MustCompile(`(?P<version>(?P<secret>(?P<parent>projects\/[\w-]+(?P<parent_suffix>\/locations\/[\w-]+)?)\/secrets\/[\w-]+)(?P<version_suffix>\/versions\/[\w-]+)?)`) //nolint:lll
 
 	ErrNotFound   = errors.New("secret not found")
-	ErrInvalidURL = fmt.Errorf("invalid URL (should be formatted %s or %s)", shortFormURL, longFormURL)
+	ErrInvalidURL = errors.New("invalid URL")
 )
 
 // GSMStore provides methods for accessing secrets stored
@@ -112,39 +113,27 @@ func (s *GSMStore) names(value models.Value) (*parsedNames, error) {
 	path := url.Path
 	path = strings.TrimPrefix(path, "/")
 	path = strings.TrimSuffix(path, "/")
-	segments := strings.Split(path, "/")
-
-	// Could probably do this more compactly w/ a regex, but this
-	// feels a lot more readable/maintainable.
-	switch len(segments) {
-	case 8: // secret+google:///projects/*/locations/*/secrets/*/versions/*
-		if segments[0] == "projects" && segments[1] != "" &&
-			segments[2] == "locations" && segments[3] != "" &&
-			segments[4] == "secrets" && segments[5] != "" &&
-			segments[6] == "versions" && segments[7] != "" {
-			return &parsedNames{
-				Parent:  strings.Join(segments[0:4], "/"),
-				Secret:  strings.Join(segments[0:6], "/"),
-				Version: strings.Join(segments[0:8], "/"),
-			}, nil
-		} else {
-			return nil, fmt.Errorf("%w: %s", ErrInvalidURL, url.String())
-		}
-	case 6: // secret+google:///projects/*/secrets/*/versions/*
-		if segments[0] == "projects" && segments[1] != "" &&
-			segments[2] == "secrets" && segments[3] != "" &&
-			segments[4] == "versions" && segments[5] != "" {
-			return &parsedNames{
-				Parent:  strings.Join(segments[0:2], "/"),
-				Secret:  strings.Join(segments[0:4], "/"),
-				Version: strings.Join(segments[0:6], "/"),
-			}, nil
-		} else {
-			return nil, fmt.Errorf("%w: %s", ErrInvalidURL, url.String())
-		}
-	default:
+	
+	match := secretPathRe.FindStringSubmatch(path)
+	if match == nil {
 		return nil, fmt.Errorf("%w: %s", ErrInvalidURL, url.String())
 	}
+
+	results := map[string]string{}
+	for i, name := range secretPathRe.SubexpNames() {
+		results[name] = match[i]
+	}
+
+	if results["version_suffix"] == "" {
+		// Ensure a valid version name.
+		results["version"] += "/versions/latest"
+	}
+
+	return &parsedNames{
+		Parent:  results["parent"],
+		Secret:  results["secret"],
+		Version: results["version"],
+	}, nil
 }
 
 // Ensures a secret exists for the given name.

@@ -9,17 +9,33 @@ import (
 func TestGSMStore_names(t *testing.T) {
 	store := NewGSMStore(nil)
 
-	names, err := store.names("secret+google:///projects/my-project-id/secrets/my-secret-id/versions/latest")
+	// Short form, no version
+	names, err := store.names("secret+google:///projects/my-project-id/secrets/my-secret-id")
 	require.NoError(t, err)
 	require.Equal(t, "projects/my-project-id", names.Parent)
 	require.Equal(t, "projects/my-project-id/secrets/my-secret-id", names.Secret)
 	require.Equal(t, "projects/my-project-id/secrets/my-secret-id/versions/latest", names.Version)
 
-	names, err = store.names("secret+google:///projects/my-project-id/locations/global/secrets/my-secret-id/versions/latest") //nolint:lll
+	// Short form, with version
+	names, err = store.names("secret+google:///projects/my-project-id/secrets/my-secret-id/versions/something")
+	require.NoError(t, err)
+	require.Equal(t, "projects/my-project-id", names.Parent)
+	require.Equal(t, "projects/my-project-id/secrets/my-secret-id", names.Secret)
+	require.Equal(t, "projects/my-project-id/secrets/my-secret-id/versions/something", names.Version)
+
+	// Long form, no version
+	names, err = store.names("secret+google:///projects/my-project-id/locations/global/secrets/my-secret-id")
 	require.NoError(t, err)
 	require.Equal(t, "projects/my-project-id/locations/global", names.Parent)
 	require.Equal(t, "projects/my-project-id/locations/global/secrets/my-secret-id", names.Secret)
 	require.Equal(t, "projects/my-project-id/locations/global/secrets/my-secret-id/versions/latest", names.Version)
+
+	// Long form, with version
+	names, err = store.names("secret+google:///projects/my-project-id/locations/global/secrets/my-secret-id/versions/something") //nolint:lll
+	require.NoError(t, err)
+	require.Equal(t, "projects/my-project-id/locations/global", names.Parent)
+	require.Equal(t, "projects/my-project-id/locations/global/secrets/my-secret-id", names.Secret)
+	require.Equal(t, "projects/my-project-id/locations/global/secrets/my-secret-id/versions/something", names.Version)
 
 	names, err = store.names("secret+google:///lol/wat")
 	require.ErrorContains(t, err, "invalid URL")
