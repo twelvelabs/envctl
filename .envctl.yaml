@@ -5,8 +5,8 @@ environments:
     vars:
       EXAMPLE_COMMON: some-common-value
       EXAMPLE_USER: env://USER
-      EXAMPLE_SECRET1: secret+google:///projects/default-project-235223/secrets/example-secret/versions/latest#AAA
-      EXAMPLE_SECRET2: secret+google:///projects/default-project-235223/secrets/example-secret/versions/latest#BBB
+      EXAMPLE_SECRET1: secret+google:///projects/default-project-235223/secrets/example-secret#AAA
+      EXAMPLE_SECRET2: secret+google:///projects/default-project-235223/secrets/unknown-secret?default=foo#BBB
 
   - name: local
     extends:

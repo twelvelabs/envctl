@@ -48,7 +48,8 @@ func (s *GSMStore) Get(ctx context.Context, value models.Value) (string, error) 
 		return "", err
 	}
 
-	plaintext, err := s.accessSecretVersion(ctx, names.Version)
+	_, hasDefault := value.URL().Default()
+	plaintext, err := s.accessSecretVersion(ctx, names.Version, hasDefault)
 	if err != nil {
 		return "", err
 	}
@@ -70,7 +71,7 @@ func (s *GSMStore) Set(ctx context.Context, value models.Value, updated string) 
 	}
 
 	// Get the current secret version.
-	plaintext, err := s.accessSecretVersion(ctx, names.Version)
+	plaintext, err := s.accessSecretVersion(ctx, names.Version, true)
 	if err != nil {
 		return err
 	}
@@ -113,7 +114,7 @@ func (s *GSMStore) names(value models.Value) (*parsedNames, error) {
 	path := url.Path
 	path = strings.TrimPrefix(path, "/")
 	path = strings.TrimSuffix(path, "/")
-	
+
 	match := secretPathRe.FindStringSubmatch(path)
 	if match == nil {
 		return nil, fmt.Errorf("%w: %s", ErrInvalidURL, url.String())
@@ -174,14 +175,19 @@ func (s *GSMStore) getOrCreateSecret(
 	return secret, rpcErr(err, parent)
 }
 
-func (s *GSMStore) accessSecretVersion(ctx context.Context, versionName string) (string, error) {
+func (s *GSMStore) accessSecretVersion(ctx context.Context, versionName string, hasDefault bool) (string, error) {
 	plaintext, found := s.cache[versionName]
 	if !found {
 		resp, err := s.client.AccessSecretVersion(ctx, &secretmanagerpb.AccessSecretVersionRequest{
 			Name: versionName,
 		})
+		err = rpcErr(err, versionName)
 		if err != nil {
-			return "", rpcErr(err, versionName)
+			if errors.Is(err, ErrNotFound) && hasDefault {
+				// Not really an error if we have a default value.
+				err = nil
+			}
+			return "", err
 		}
 		plaintext = string(resp.GetPayload().GetData())
 		s.cache[versionName] = plaintext

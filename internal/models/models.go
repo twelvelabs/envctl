@@ -12,6 +12,13 @@ type URL struct {
 	*url.URL
 }
 
+// Default returns the `default` query param,
+// and whether that params exists in the URL.
+func (u URL) Default() (string, bool) {
+	q := u.Query()
+	return q.Get("default"), q.Has("default")
+}
+
 // Value is a value to inject into the environment.
 type Value string
 
