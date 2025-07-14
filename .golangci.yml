@@ -18,6 +18,7 @@ linters:
     - gochecknoinits
     - mnd
     - nlreturn
+    - noinlineerr
     - paralleltest
     - revive
     - tagalign
@@ -27,6 +28,7 @@ linters:
     - varnamelen
     - wrapcheck
     - wsl
+    - wsl_v5
 
   exclusions:
     rules:
