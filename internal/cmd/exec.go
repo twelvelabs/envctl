@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/twelvelabs/envctl/internal/core"
+	"github.com/twelvelabs/envctl/internal/dotenv"
 )
 
 func NewExecCmd(app *core.App) *cobra.Command {
@@ -36,7 +37,7 @@ func NewExecCmd(app *core.App) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().BoolVar(&app.Config.DotEnv, "dotenv", app.Config.DotEnv, "create a temporary dotenv file")
+	cmd.Flags().BoolVar(&app.Config.DotEnv.Enabled, "dotenv", app.Config.DotEnv.Enabled, "create a temporary dotenv file")
 
 	return cmd
 }
@@ -53,10 +54,12 @@ func execEnv(app *core.App, envName string, args []string) error {
 		return err
 	}
 
-	if app.Config.DotEnv {
-		dotEnvSvc := core.NewDotEnvService("")
+	if app.Config.DotEnv.Enabled {
+		dotEnvSvc := dotenv.NewDotEnvService("").
+			WithQuoteStyle(app.Config.DotEnv.QuoteStyle).
+			WithEscapeStyle(app.Config.DotEnv.EscapeStyle)
 
-		var cleanup core.CleanupFunc
+		var cleanup dotenv.CleanupFunc
 		vars, args, cleanup, err = dotEnvSvc.Create(vars, args)
 		if err != nil {
 			return err

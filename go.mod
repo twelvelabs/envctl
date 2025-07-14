@@ -11,7 +11,6 @@ require (
 	github.com/deckarep/golang-set/v2 v2.8.0
 	github.com/googleapis/gax-go v1.0.3
 	github.com/hashicorp/go-getter v1.7.8
-	github.com/joho/godotenv v1.5.1
 	github.com/muesli/mango-cobra v1.2.0
 	github.com/muesli/roff v0.1.0
 	github.com/spf13/cobra v1.9.1

@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/twelvelabs/envctl/internal/dotenv"
 )
 
 func TestNewConfigFromPath(t *testing.T) {
@@ -28,6 +30,10 @@ func TestNewConfigFromPath(t *testing.T) {
 				Debug:      false,
 				Prompt:     true,
 				LogLevel:   "warn",
+				DotEnv: DotEnvConfig{
+					QuoteStyle:  dotenv.QuoteStyleDouble,
+					EscapeStyle: dotenv.EscapeStyleDefault,
+				},
 			},
 			assertion: assert.NoError,
 		},

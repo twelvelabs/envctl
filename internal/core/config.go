@@ -8,6 +8,8 @@ import (
 
 	"github.com/spf13/pflag"
 	"github.com/twelvelabs/termite/conf"
+
+	"github.com/twelvelabs/envctl/internal/dotenv"
 )
 
 //go:embed config.default.yaml
@@ -22,12 +24,19 @@ type Config struct {
 	ConfigPath string
 	Color      bool   `yaml:"color" env:"ENVCTL_COLOR" default:"true"`
 	Debug      bool   `yaml:"debug" env:"ENVCTL_DEBUG"`
-	DotEnv     bool   `yaml:"dotenv" env:"ENVCTL_DOTENV" default:"false"`
 	Prompt     bool   `yaml:"prompt" env:"ENVCTL_PROMPT" default:"true"`
 	LogLevel   string `yaml:"log_level" env:"ENVCTL_LOG_LEVEL" default:"warn" validate:"oneof=debug info warn error fatal"` //nolint: lll
 
 	Version      string        `yaml:"version"`
+	DotEnv       DotEnvConfig  `yaml:"dotenv"`
 	Environments []Environment `yaml:"environments"`
+}
+
+type DotEnvConfig struct {
+	Enabled     bool               `yaml:"enabled" env:"ENVCTL_DOTENV_ENABLED"`
+	BasePath    string             `yaml:"base_path" env:"ENVCTL_DOTENV_BASE_PATH"`
+	QuoteStyle  dotenv.QuoteStyle  `yaml:"quote_style" env:"ENVCTL_DOTENV_QUOTE_STYLE" default:"double" validate:"oneof=none single double"` //nolint: lll
+	EscapeStyle dotenv.EscapeStyle `yaml:"escape_style" env:"ENVCTL_DOTENV_ESCAPE_STYLE" default:"default" validate:"oneof=default compose"` //nolint: lll
 }
 
 func (c *Config) EnvironmentNames() []string {
