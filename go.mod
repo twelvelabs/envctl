@@ -19,7 +19,7 @@ require (
 	github.com/tidwall/gjson v1.18.0
 	github.com/tidwall/sjson v1.2.5
 	github.com/twelvelabs/termite v0.13.2
-	google.golang.org/grpc v1.73.0
+	google.golang.org/grpc v1.74.2
 )
 
 require (
